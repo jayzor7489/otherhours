@@ -25,6 +25,8 @@ let places: [String: (String, String)] = [
     "Honolulu": ("US", "Pacific/Honolulu"), "New York": ("US", "America/New_York"), "Kathmandu": ("NP", "Asia/Kathmandu"),
     "Paris": ("FR", "Europe/Paris"), "Auckland": ("NZ", "Pacific/Auckland"), "Cebu City": ("PH", "Asia/Manila"),
     "San Francisco": ("US", "America/Los_Angeles"),
+    "Colorado Springs": ("US", "America/Denver"), "Ho Chi Minh City": ("VN", "Asia/Ho_Chi_Minh"),
+    "Rio de Janeiro": ("BR", "America/Sao_Paulo"), "Saint Petersburg": ("RU", "Europe/Moscow"),
 ]
 func saved(_ names: String) -> [SavedCity] {
     names.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }.map {
@@ -42,6 +44,7 @@ struct Scenario {
 }
 
 let usual = "Denver, London, Sydney"
+let longNames = "Colorado Springs, Ho Chi Minh City, Rio de Janeiro, Saint Petersburg"
 let eight = "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu"
 let scenarios: [Scenario] = [
     Scenario(name: "medium-usual", size: .medium, cities: usual),
@@ -57,7 +60,11 @@ let scenarios: [Scenario] = [
     Scenario(name: "clocks-large", size: .large, cities: eight, theme: .clocks),
     Scenario(name: "clocks-medium-mono", size: .medium, cities: usual, monochrome: true, theme: .clocks),
     Scenario(name: "clocks-medium-empty", size: .medium, cities: "", theme: .clocks),
-] + [Theme.list, .spotlight].flatMap { theme in [
+] + Theme.allCases.flatMap { theme in [
+    // Long names: every theme must keep the flag and fit or shrink the name, never cut it mid-word.
+    Scenario(name: "long-\(theme.rawValue)-medium", size: .medium, cities: longNames, theme: theme),
+    Scenario(name: "long-\(theme.rawValue)-large", size: .large, cities: longNames + ", Kathmandu, San Francisco", theme: theme),
+] } + [Theme.list, .spotlight].flatMap { theme in [
     Scenario(name: "\(theme.rawValue)-medium", size: .medium, cities: usual, theme: theme),
     Scenario(name: "\(theme.rawValue)-medium-dark", size: .medium, cities: usual, theme: theme, dark: true),
     Scenario(name: "\(theme.rawValue)-large", size: .large, cities: eight + ", Paris, Auckland, Honolulu", theme: theme),

@@ -54,17 +54,13 @@ private struct ListRow: View {
     var body: some View {
         let parts = timeParts(date, in: place.zone, locale: locale, hourCycle: hourCycle)
         HStack(spacing: 10) {
-            Text(place.flag).font(.system(size: full ? 22 : 18))
+            Text(place.flag).font(.system(size: full ? 22 : 18)).fixedSize()
             VStack(alignment: .leading, spacing: 1) {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    (Text(place.name).fontWeight(.semibold)
-                        + Text(place.isYou ? " · you" : "").foregroundColor(.secondary))
-                        .font(.system(size: 14)).lineLimit(1)
-                    if !full && !place.isYou {  // compact rows have no second line: keep the difference
-                        Text(compactDifference(at: date, cityZone: place.zone, userZone: userZone))
-                            .font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1).fixedSize()
-                    }
-                }
+                NameWithDifference(name: Text(place.name).fontWeight(.semibold)
+                                       + Text(place.isYou ? " · you" : "").foregroundColor(.secondary),
+                                   nameSize: 14,
+                                   difference: full || place.isYou ? nil : compactDifference(at: date, cityZone: place.zone, userZone: userZone),
+                                   differenceSize: 11, differenceStyle: AnyShapeStyle(.secondary))
                 if full {
                     Text(subLine(for: place, date: date, userZone: userZone, locale: locale))
                         .font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)

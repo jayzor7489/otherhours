@@ -53,22 +53,45 @@ struct SpotlightThemeView: View {
         }
     }
 
+    private func flagAndName(_ place: Place) -> some View {
+        HStack(spacing: 6) {
+            Text(place.flag).fixedSize()  // a flag never gives way to a long name
+            Text(place.name).fontWeight(.semibold).lineLimit(1).minimumScaleFactor(0.8)
+        }
+    }
+
+    private func timeAndOffset(_ place: Place) -> some View {
+        let parts = timeParts(date, in: place.zone, locale: locale, hourCycle: hourCycle)
+        return HStack(spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: 1) {
+                Text(parts.time).fontWeight(.medium).monospacedDigit()
+                if let period = parts.period { Text(period).font(.system(size: 9, weight: .medium)) }
+            }
+            .fixedSize()
+            Text(shortOffset(at: date, cityZone: place.zone, userZone: userZone))
+                .font(.system(size: 10)).foregroundStyle(.secondary).frame(width: 28, alignment: .trailing)
+        }
+    }
+
     private func list(_ cities: [ClockRow], overflow: Int) -> some View {
         VStack(alignment: .leading, spacing: 9) {
             ForEach(Array(cities.enumerated()), id: \.offset) { _, row in
                 let place = Place(row)
-                let parts = timeParts(date, in: place.zone, locale: locale, hourCycle: hourCycle)
-                HStack(spacing: 6) {
-                    Text(place.flag)
-                    Text(place.name).fontWeight(.semibold).lineLimit(1).minimumScaleFactor(0.8).layoutPriority(1)
-                    Spacer(minLength: 2)
-                    HStack(alignment: .firstTextBaseline, spacing: 1) {
-                        Text(parts.time).fontWeight(.medium).monospacedDigit()
-                        if let period = parts.period { Text(period).font(.system(size: 9, weight: .medium)) }
+                // One line when the name fits (mockup D); otherwise time and difference move under
+                // the name, so "Colorado Springs" is never cut and its flag never squeezed out.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 6) {
+                        flagAndName(place).fixedSize()
+                        Spacer(minLength: 4)
+                        timeAndOffset(place)
                     }
-                    .fixedSize()
-                    Text(shortOffset(at: date, cityZone: place.zone, userZone: userZone))
-                        .font(.system(size: 10)).foregroundStyle(.secondary).frame(width: 28, alignment: .trailing)
+                    VStack(alignment: .leading, spacing: 1) {
+                        flagAndName(place)
+                        HStack(spacing: 6) {
+                            Spacer(minLength: 0)
+                            timeAndOffset(place)
+                        }
+                    }
                 }
                 .font(.system(size: 12.5))
             }

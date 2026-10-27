@@ -60,3 +60,35 @@ func shortOffset(at date: Date, cityZone: TimeZone, userZone: TimeZone) -> Strin
     let label = offsetLabel(at: date, cityZone: cityZone, userZone: userZone)
     return label == "Same time" ? "0" : label.replacingOccurrences(of: " hrs", with: "")
 }
+
+/// A compact row's name with the time difference beside it. When space runs short, "−14 hrs"
+/// becomes "−14", then the name shrinks a little; only then does it truncate. ("Colorado Springs"
+/// was cut off on a real medium widget, which is a few points narrower than the previews.)
+struct NameWithDifference: View {
+    let name: Text
+    let nameSize: CGFloat
+    let difference: String?
+    let differenceSize: CGFloat
+    let differenceStyle: AnyShapeStyle
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            line(difference, shrink: false)
+            line(difference?.replacingOccurrences(of: " hrs", with: ""), shrink: false)
+            line(difference?.replacingOccurrences(of: " hrs", with: ""), shrink: true)
+        }
+    }
+
+    private func line(_ difference: String?, shrink: Bool) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            if shrink {
+                name.font(.system(size: nameSize)).lineLimit(1).minimumScaleFactor(0.8)
+            } else {
+                name.font(.system(size: nameSize)).lineLimit(1).fixedSize()
+            }
+            if let difference {
+                Text(difference).font(.system(size: differenceSize)).foregroundStyle(differenceStyle).lineLimit(1).fixedSize()
+            }
+        }
+    }
+}

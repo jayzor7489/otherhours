@@ -96,18 +96,14 @@ struct PlaceRow: View {
         let parts = timeParts(date, in: zone, locale: locale, hourCycle: hourCycle)
         let full = style == .full
         Bar(band: band, style: style, monochrome: monochrome) {
-            Text(flag).font(.system(size: full ? 18 : 16))
+            Text(flag).font(.system(size: full ? 18 : 16)).fixedSize()  // a flag never gives way to a long name
             VStack(alignment: .leading, spacing: 1) {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    (Text(name).fontWeight(.semibold)
-                        + Text(isYou ? " · you" : "").fontWeight(.regular).foregroundColor(.white.opacity(0.7)))
-                        .font(.system(size: full ? 13 : 14))
-                        .lineLimit(1)
-                    if !full && !isYou {  // compact rows have no second line: keep the difference
-                        Text(compactDifference(at: date, cityZone: zone, userZone: userZone))
-                            .font(.system(size: 10.5)).opacity(0.78).lineLimit(1).fixedSize()
-                    }
-                }
+                // Compact rows have no second line, so the difference sits beside the name.
+                NameWithDifference(name: Text(name).fontWeight(.semibold)
+                                       + Text(isYou ? " · you" : "").fontWeight(.regular).foregroundColor(.white.opacity(0.7)),
+                                   nameSize: full ? 13 : 14,
+                                   difference: full || isYou ? nil : compactDifference(at: date, cityZone: zone, userZone: userZone),
+                                   differenceSize: 10.5, differenceStyle: AnyShapeStyle(.white.opacity(0.78)))
                 if full {
                     Text(WorldClockViews.subLine(for: Place(name: name, flag: flag, zone: zone, isYou: isYou), date: date, userZone: userZone, locale: locale))
                         .font(.system(size: 10)).opacity(0.78).lineLimit(1)

@@ -32,13 +32,13 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 ## Time
 
 - ⏳ **Minute ticks.** Leave it 2 minutes: every row advances by itself.
-- ⏳ **24-hour Mac.** System Settings > General > Date & Time > 24-hour time on: rows show `17:10` with no AM/PM.
+- ✅ **24-hour Mac.** System Settings > General > Date & Time > 24-hour time on: rows show `17:10` with no AM/PM. (Jason, 2026-10-28)
 - ⏳ **DST on Sunday Nov 1.** Denver's line changes from "−14 hrs" to "−15 hrs" by itself.
 - ⏳ **Time zone change.** Change the Mac's time zone: within an hour (sooner after an edit) the first row follows.
 
 ## Recovery
 
-- ⏳ **After a reboot.** The widget comes back on its own, not grey.
+- ✅ **After a reboot.** The widget comes back on its own, not grey. (Jason, 2026-10-28)
 - ⏳ **Repair.** If it is ever grey, opening World Clock fixes it within a few seconds.
 
 ## Menu bar (added 2026-10-27)
@@ -61,8 +61,8 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 - ⏳ **Add slot.** + Add city focuses the search; Return picks the first suggestion; Escape or Cancel closes the slot.
 - ⏳ **Reorder and remove.** Drag a city (or right-click › Move Up/Down); the minus button removes it. Widget and panel follow.
 - ⏳ **Themes on the desktop.** Pick each of Day & Night, List, Clocks, Spotlight: widget and panel switch within a few seconds. List and Spotlight in light and dark mode.
-- ⏳ **Time format.** 24-hour shows `14:10`, no AM/PM, in widget, panel and Settings; Follow Mac goes back to the Mac's setting.
+- ✅ **Time format.** 24-hour shows `14:10`, no AM/PM, in widget, panel and Settings; Follow Mac goes back to the Mac's setting. (Jason, 2026-10-28: 24-hour works)
 - ⏳ **Mac time zone change.** Change the Mac's time zone: the first row, Settings' own row, the panel and the widget all follow within seconds.
 - ⏳ **Empty state.** Remove every city: widget says "Add cities from the menu bar 🌐"; panel says "Add cities in Settings" and clicking it opens Settings.
 - ⏳ **Open at Login** checkbox in Settings matches the gear menu and System Settings.
-
+- ✅ **Long names.** Colorado Springs lost its flag in Spotlight and was cut off in Day & Night (Jason, 2026-10-28). Fixed for every theme: flags never shrink, "−14 hrs" becomes "−14" before a name is cut, Spotlight moves time under a long name, Clocks names wrap. Previews `long-*.png`.

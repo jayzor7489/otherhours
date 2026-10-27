@@ -20,7 +20,7 @@ struct ClocksThemeView: View {
         let cells: [Cell] = rows.prefix(plan.visibleCount).map { .place(Place($0)) }
             + (plan.overflowCount > 0 ? [.note("+\(plan.overflowCount) more")] : [])
             + (rows.count == 1 ? [.note(emptyNote)] : [])
-        let diameter: CGFloat = size == .medium ? 64 : 70
+        let diameter: CGFloat = size == .medium ? 64 : 58  // large: room for 3 rows with two-line names
         VStack(spacing: size == nil ? 14 : 8) {
             ForEach(Array(stride(from: 0, to: cells.count, by: perRow)), id: \.self) { start in
                 HStack(alignment: .top, spacing: 0) {
@@ -47,8 +47,9 @@ struct ClocksThemeView: View {
         case .place(let place):
             VStack(spacing: 4) {
                 AnalogFace(zone: place.zone, date: date, diameter: diameter, monochrome: monochrome)
-                Text("\(place.flag) \(place.name)").font(.system(size: 12, weight: .semibold)).lineLimit(1)
-                    .minimumScaleFactor(0.75)
+                // Long names wrap to a second line rather than being cut ("Colorado Springs").
+                Text("\(place.flag) \(place.name)").font(.system(size: 12, weight: .semibold)).lineLimit(2)
+                    .multilineTextAlignment(.center).minimumScaleFactor(0.85).fixedSize(horizontal: false, vertical: true)
                 Text(place.isYou ? "you" : subLine(for: place, date: date, userZone: userZone, locale: locale))
                     .font(.system(size: 10)).foregroundStyle(Color(white: 0.6)).lineLimit(1).minimumScaleFactor(0.8)
             }
