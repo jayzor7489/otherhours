@@ -65,4 +65,4 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 - ⏳ **Mac time zone change.** Change the Mac's time zone: the first row, Settings' own row, the panel and the widget all follow within seconds.
 - ⏳ **Empty state.** Remove every city: widget says "Add cities from the menu bar 🌐"; panel says "Add cities in Settings" and clicking it opens Settings.
 - ⏳ **Open at Login** checkbox in Settings matches the gear menu and System Settings.
-- ✅ **Long names.** Colorado Springs lost its flag in Spotlight and was cut off in Day & Night (Jason, 2026-10-28). Fixed for every theme: flags never shrink, "−14 hrs" becomes "−14" before a name is cut, Spotlight moves time under a long name, Clocks names wrap. Previews `long-*.png`.
+- ⏳ **Long names.** Colorado Springs lost its flag in Spotlight and squeezed the sun icon in Day & Night (Jason, 2026-10-28). Rule now, every theme: flag, sky icon, time and difference keep their size and place; a long name is cut ("Colorado Spr…"); the difference shortens first ("−14 hrs" → "−14"). Previews `long-*`, `narrow-*`. Check on the desktop with Colorado Springs and Honolulu.

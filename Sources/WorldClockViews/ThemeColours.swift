@@ -61,9 +61,9 @@ func shortOffset(at date: Date, cityZone: TimeZone, userZone: TimeZone) -> Strin
     return label == "Same time" ? "0" : label.replacingOccurrences(of: " hrs", with: "")
 }
 
-/// A compact row's name with the time difference beside it. When space runs short, "−14 hrs"
-/// becomes "−14", then the name shrinks a little; only then does it truncate. ("Colorado Springs"
-/// was cut off on a real medium widget, which is a few points narrower than the previews.)
+/// A compact row's name with the time difference beside it. Flag, icon and time keep their size
+/// (Jason's rule); when space runs short "−14 hrs" becomes "−14", and then the name is cut
+/// ("Colorado Spr…"). Real medium widgets are a few points narrower than the previews.
 struct NameWithDifference: View {
     let name: Text
     let nameSize: CGFloat
@@ -75,14 +75,14 @@ struct NameWithDifference: View {
         ViewThatFits(in: .horizontal) {
             line(difference, shrink: false)
             line(difference?.replacingOccurrences(of: " hrs", with: ""), shrink: false)
-            line(difference?.replacingOccurrences(of: " hrs", with: ""), shrink: true)
+            line(difference?.replacingOccurrences(of: " hrs", with: ""), shrink: true)  // name truncates
         }
     }
 
     private func line(_ difference: String?, shrink: Bool) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             if shrink {
-                name.font(.system(size: nameSize)).lineLimit(1).minimumScaleFactor(0.8)
+                name.font(.system(size: nameSize)).lineLimit(1).truncationMode(.tail)
             } else {
                 name.font(.system(size: nameSize)).lineLimit(1).fixedSize()
             }

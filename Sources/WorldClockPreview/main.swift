@@ -41,6 +41,7 @@ struct Scenario {
     var monochrome = false
     var theme = Theme.dayNight
     var dark = false
+    var width: CGFloat = 344  // real medium widgets can be narrower; "narrow-*" scenarios check that
 }
 
 let usual = "Denver, London, Sydney"
@@ -63,6 +64,8 @@ let scenarios: [Scenario] = [
 ] + Theme.allCases.flatMap { theme in [
     // Long names: every theme must keep the flag and fit or shrink the name, never cut it mid-word.
     Scenario(name: "long-\(theme.rawValue)-medium", size: .medium, cities: longNames, theme: theme),
+    Scenario(name: "narrow-\(theme.rawValue)-medium", size: .medium, cities: "Colorado Springs, Cairns, Honolulu", theme: theme, width: 320),
+    Scenario(name: "pm12-\(theme.rawValue)-medium", size: .medium, cities: "Denver, London, Cairns", theme: theme),
     Scenario(name: "long-\(theme.rawValue)-large", size: .large, cities: longNames + ", Kathmandu, San Francisco", theme: theme),
 ] } + [Theme.list, .spotlight].flatMap { theme in [
     Scenario(name: "\(theme.rawValue)-medium", size: .medium, cities: usual, theme: theme),
@@ -72,7 +75,7 @@ let scenarios: [Scenario] = [
 ] }
 
 @MainActor func render(_ s: Scenario) throws {
-    let (width, height): (CGFloat, CGFloat) = s.size == .medium ? (344, 164) : (344, 354)
+    let (width, height): (CGFloat, CGFloat) = (s.width, s.size == .medium ? 164 : 354)
     let rows = makeRows(saved: saved(s.cities), userZone: userZone, directory: directory)
     let scheme: ColorScheme = s.dark ? .dark : .light
     let view = ClockWidgetView(rows: rows, date: date, userZone: userZone, size: s.size, monochrome: s.monochrome, locale: locale,

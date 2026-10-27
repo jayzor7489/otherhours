@@ -25,14 +25,16 @@ struct SpotlightThemeView: View {
             .padding(.horizontal, 6)
             .padding(.vertical, 4)
         } else {
-            // The hero takes only what its time needs; names get the rest.
-            HStack(spacing: 10) {
-                hero.fixedSize()
-                Divider()
-                list(cities, overflow: plan.overflowCount).frame(maxWidth: .infinity)
+            // The hero gets 38% of the width (its time scales down if needed); names get the rest.
+            GeometryReader { geo in
+                HStack(spacing: 10) {
+                    hero.frame(width: geo.size.width * 0.38, alignment: .leading)
+                    Divider()
+                    list(cities, overflow: plan.overflowCount).frame(maxWidth: .infinity)
+                }
+                .frame(maxHeight: .infinity)
             }
             .padding(.horizontal, 9)
-            .frame(maxHeight: .infinity)
         }
     }
 
@@ -41,6 +43,7 @@ struct SpotlightThemeView: View {
         let parts = timeParts(date, in: own.zone, locale: locale, hourCycle: hourCycle)
         return VStack(alignment: .leading, spacing: 2) {
             Text("\(own.flag) \(own.name) · you").font(.system(size: 12)).foregroundStyle(.secondary).lineLimit(1)
+                .truncationMode(.tail)
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text(parts.time).font(.system(size: 40, weight: .thin)).monospacedDigit()
                 if let period = parts.period {
@@ -56,7 +59,7 @@ struct SpotlightThemeView: View {
     private func flagAndName(_ place: Place) -> some View {
         HStack(spacing: 6) {
             Text(place.flag).fixedSize()  // a flag never gives way to a long name
-            Text(place.name).fontWeight(.semibold).lineLimit(1).minimumScaleFactor(0.8)
+            Text(place.name).fontWeight(.semibold).lineLimit(1).truncationMode(.tail)
         }
     }
 
@@ -77,21 +80,11 @@ struct SpotlightThemeView: View {
         VStack(alignment: .leading, spacing: 9) {
             ForEach(Array(cities.enumerated()), id: \.offset) { _, row in
                 let place = Place(row)
-                // One line when the name fits (mockup D); otherwise time and difference move under
-                // the name, so "Colorado Springs" is never cut and its flag never squeezed out.
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 6) {
-                        flagAndName(place).fixedSize()
-                        Spacer(minLength: 4)
-                        timeAndOffset(place)
-                    }
-                    VStack(alignment: .leading, spacing: 1) {
-                        flagAndName(place)
-                        HStack(spacing: 6) {
-                            Spacer(minLength: 0)
-                            timeAndOffset(place)
-                        }
-                    }
+                // Flag, time and difference keep their place; a long name is cut (Jason's rule).
+                HStack(spacing: 6) {
+                    flagAndName(place)
+                    Spacer(minLength: 4)
+                    timeAndOffset(place)
                 }
                 .font(.system(size: 12.5))
             }

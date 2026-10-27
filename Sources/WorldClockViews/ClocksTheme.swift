@@ -20,7 +20,7 @@ struct ClocksThemeView: View {
         let cells: [Cell] = rows.prefix(plan.visibleCount).map { .place(Place($0)) }
             + (plan.overflowCount > 0 ? [.note("+\(plan.overflowCount) more")] : [])
             + (rows.count == 1 ? [.note(emptyNote)] : [])
-        let diameter: CGFloat = size == .medium ? 64 : 58  // large: room for 3 rows with two-line names
+        let diameter: CGFloat = size == .medium ? 64 : 70
         VStack(spacing: size == nil ? 14 : 8) {
             ForEach(Array(stride(from: 0, to: cells.count, by: perRow)), id: \.self) { start in
                 HStack(alignment: .top, spacing: 0) {
@@ -42,16 +42,30 @@ struct ClocksThemeView: View {
         case note(String)
     }
 
+    private func differenceForms(_ place: Place) -> [String] {
+        guard !place.isYou else { return ["you"] }
+        let compact = compactDifference(at: date, cityZone: place.zone, userZone: userZone)
+        let forms = [subLine(for: place, date: date, userZone: userZone, locale: locale), compact,
+                     compact.replacingOccurrences(of: " hrs", with: "")]
+        return forms.enumerated().filter { !forms[..<$0.offset].contains($0.element) }.map(\.element)  // "Yesterday · …" repeats
+    }
+
     @ViewBuilder private func cellView(_ cell: Cell, diameter: CGFloat) -> some View {
         switch cell {
         case .place(let place):
             VStack(spacing: 4) {
                 AnalogFace(zone: place.zone, date: date, diameter: diameter, monochrome: monochrome)
-                // Long names wrap to a second line rather than being cut ("Colorado Springs").
-                Text("\(place.flag) \(place.name)").font(.system(size: 12, weight: .semibold)).lineLimit(2)
-                    .multilineTextAlignment(.center).minimumScaleFactor(0.85).fixedSize(horizontal: false, vertical: true)
-                Text(place.isYou ? "you" : subLine(for: place, date: date, userZone: userZone, locale: locale))
-                    .font(.system(size: 10)).foregroundStyle(Color(white: 0.6)).lineLimit(1).minimumScaleFactor(0.8)
+                // The flag keeps its place; a long name is cut (Jason's rule).
+                HStack(spacing: 4) {
+                    Text(place.flag).fixedSize()
+                    Text(place.name).lineLimit(1).truncationMode(.tail)
+                }
+                .font(.system(size: 12, weight: .semibold))
+                // The difference is never cut: it shortens instead ("Today · −14 hrs" → "−14 hrs" → "−14").
+                ViewThatFits(in: .horizontal) {
+                    ForEach(differenceForms(place), id: \.self) { Text($0).lineLimit(1).fixedSize() }
+                }
+                .font(.system(size: 10)).foregroundStyle(Color(white: 0.6))
             }
             .padding(.horizontal, 2)
         case .note(let text):

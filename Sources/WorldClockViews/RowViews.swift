@@ -111,7 +111,7 @@ struct PlaceRow: View {
             }
             .layoutPriority(1)
             Spacer(minLength: 4)
-            SkyIcon(band: band, monochrome: monochrome, size: full ? 13 : 12)
+            SkyIcon(band: band, monochrome: monochrome, size: full ? 13 : 12).fixedSize()  // flag, icon and time never give way
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(parts.time).font(.system(size: full ? 20 : 18, weight: .medium)).monospacedDigit()
                 if let period = parts.period {
