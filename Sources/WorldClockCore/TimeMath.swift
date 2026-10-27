@@ -62,4 +62,15 @@ public enum SkyBand: Equatable, CaseIterable {
         default: return .night
         }
     }
+
+    /// Full-colour bar gradient, left to right, as 0xRRGGBB. Mockup B's hues, with the light
+    /// right-hand ends darkened so the white time on them stays at 3:1 or better.
+    public var gradientHex: (leading: UInt32, trailing: UInt32) {
+        switch self {
+        case .night: (0x1B2340, 0x2B2F5C)
+        case .dawn: (0x3D4F86, 0xC9805E)
+        case .day: (0x3F8FE0, 0x4A97DE)
+        case .dusk: (0x4A8FD8, 0xC98330)
+        }
+    }
 }

@@ -10,13 +10,7 @@ private func hex(_ value: UInt32) -> Color {
 
 extension SkyBand {
     var gradient: LinearGradient {
-        let (from, to): (UInt32, UInt32) = switch self {
-        case .night: (0x1B2340, 0x2B2F5C)
-        case .dawn: (0x3D4F86, 0xE59B74)
-        case .day: (0x3F8FE0, 0x8CC8F5)
-        case .dusk: (0x4A8FD8, 0xF2B45C)
-        }
-        return LinearGradient(colors: [hex(from), hex(to)], startPoint: .leading, endPoint: .trailing)
+        LinearGradient(colors: [hex(gradientHex.leading), hex(gradientHex.trailing)], startPoint: .leading, endPoint: .trailing)
     }
 
     /// Monochrome/tinted mode loses hue, so bands differ by brightness instead.
