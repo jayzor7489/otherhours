@@ -1,6 +1,8 @@
 # Common time zone abbreviations, hand-made: macOS's own depend on the Mac's locale.
 # abbreviation <TAB> s (standard) or d (daylight) <TAB> time zone identifier
 # One abbreviation may name several zones (IST, BST, MST, CST, AST): search shows each.
+# Universal
+UTC	s	Etc/UTC
 # North America
 PST	s	America/Los_Angeles
 PDT	d	America/Los_Angeles

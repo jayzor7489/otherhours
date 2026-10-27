@@ -101,3 +101,49 @@ private func search(_ text: String) -> [PlaceSuggestion] { engine.search(text, a
         #expect(best < .milliseconds(50), "\(text): \(best)")
     }
 }
+
+// Final review: everyday names for places must not dead-end.
+
+@Test func chinaSuggestsShanghai() {
+    #expect(search("China").first?.timeZoneID == "Asia/Shanghai")
+}
+
+@Test func turkeySuggestsIstanbul() {
+    #expect(search("Turkey").first?.timeZoneID == "Europe/Istanbul")
+}
+
+@Test func uaeSuggestsDubai() {
+    #expect(search("UAE").first?.timeZoneID == "Asia/Dubai")
+}
+
+/// The seven US clocks come first; towns starting "Usa" may follow.
+@Test func usaGivesTheSevenUSClocks() {
+    let r = search("USA")
+    #expect(r.first?.timeZoneID == "America/New_York")
+    #expect(Set(r.prefix(7).map(\.timeZoneID)).count == 7)
+    #expect(r.prefix(7).allSatisfy { $0.countryCode == "US" })
+}
+
+@Test func ukIsLondon() {
+    #expect(search("UK").first?.timeZoneID == "Europe/London")
+}
+
+@Test func easternFindsNewYork() {
+    #expect(search("Eastern").contains { $0.timeZoneID == "America/New_York" })
+}
+
+@Test func centralFindsChicago() {
+    #expect(search("Central").contains { $0.timeZoneID == "America/Chicago" })
+}
+
+@Test func utcCanBeAdded() {
+    let r = search("UTC").first
+    #expect(r?.timeZoneID == "Etc/UTC")
+    #expect(r?.name == "UTC")
+}
+
+@Test func oldCityNamesStillWork() {
+    #expect(search("Kiev").first?.timeZoneID == "Europe/Kyiv")
+    #expect(search("Bombay").first?.timeZoneID == "Asia/Kolkata")
+    #expect(search("Saigon").first?.timeZoneID == "Asia/Ho_Chi_Minh")
+}

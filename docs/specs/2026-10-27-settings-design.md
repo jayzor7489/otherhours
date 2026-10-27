@@ -63,6 +63,8 @@ Rules:
 - **Naming:** a city match shows the city ("Colorado Springs"). A region, country, abbreviation or zone-name match shows the representative identifier's own city (America/Denver → Denver, Asia/Kolkata → Kolkata, Asia/Manila → Manila), the same naming as the own-time row. A state with two clocks (e.g. Indiana, Florida) shows one suggestion per clock.
 - Arizona must suggest Phoenix (Mountain Standard Time all year), not Denver: the zone comes from the data, never from "same abbreviation".
 - Ranking: exact name before prefix, then city over region over country over abbreviation, then by population. Up to 8 results.
+  - *Accepted deviation (build, 2026-10-27):* an exact-name city under 1 million people ranks after an exact state or country of that name, so "Puerto Rico" gives the island before the town in Colombia. Cost: "Washington" offers the state's clock (Los Angeles · Covers Washington) and Seattle before Washington DC, which is still listed; "DC" goes straight to it.
+  - *Added (final review):* everyday country names (USA, UK, UAE, Turkey, China, Holland, Burma...), old city names (Kiev, Bombay, Saigon, Madras, Peking...), zone-name words ("Eastern" ranks New York with provinces named Eastern, by population) and UTC.
 - Each suggestion shows the current local time on the right, so the person can tell they picked the right clock.
 - A city already in the list is shown greyed with "added".
 - Nothing found: "No place called 'xyz'. Try a city, state or country."

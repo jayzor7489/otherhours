@@ -18,7 +18,16 @@ public final class PlaceSearch {
     static let aliases: [String: String] = [
         "nyc": "New York City", "la": "Los Angeles", "sf": "San Francisco",
         "kl": "Kuala Lumpur", "hcmc": "Ho Chi Minh City", "dc": "Washington",
-        "calcutta": "Kolkata",
+        "calcutta": "Kolkata", "bombay": "Mumbai", "madras": "Chennai", "bangalore": "Bengaluru",
+        "kiev": "Kyiv", "saigon": "Ho Chi Minh City", "peking": "Beijing", "rangoon": "Yangon",
+        "saint louis": "St. Louis",
+    ]
+    /// Everyday names for countries that macOS spells differently ("China mainland", "Türkiye").
+    static let countryAliases: [String: String] = [
+        "usa": "US", "us": "US", "america": "US", "united states of america": "US",
+        "uk": "GB", "britain": "GB", "great britain": "GB",
+        "uae": "AE", "emirates": "AE", "turkey": "TR", "china": "CN", "holland": "NL",
+        "burma": "MM", "czech republic": "CZ", "korea": "KR", "south korea": "KR", "ivory coast": "CI",
     ]
     /// An exact-name city smaller than this ranks after an exact state or country of that name
     /// ("Puerto Rico" the island before the town in Colombia).
@@ -76,7 +85,8 @@ public final class PlaceSearch {
         let english = Locale(identifier: "en_US")
         countries = byCountry.map { code, records in
             let names = [displayLocale, english].compactMap { $0.localizedString(forRegionCode: code) }
-            return (Array(Set(names.map(CityDirectory.normalize))), code, records)
+            let aliases = Self.countryAliases.filter { $0.value == code }.map(\.key)
+            return (Array(Set(names.map(CityDirectory.normalize) + aliases)), code, records)
         }
 
         var abbr: [String: [String]] = [:]
@@ -166,12 +176,16 @@ public final class PlaceSearch {
 
         if query.count >= 4 {
             // Grouped per country: Denver and Edmonton keep the same clock, but each is its country's answer.
+            // "Eastern" is a whole word starting "Eastern Time": rank it like a region of that name,
+            // by population, so New York isn't buried under provinces called "Eastern".
             for entry in zoneNames where entry.key.hasPrefix(query) {
+                let wholeWords = entry.key == query || entry.key.hasPrefix(query + " ")
                 for (country, records) in Dictionary(grouping: entry.records, by: \.countryCode) {
                     for group in groups(records) {
                         let id = group.representativeID
                         candidates.append(Candidate(id: "\(id)|\(Self.zoneCity(id))", make: { self.zoneSuggestion(id, country: country, at: date) },
-                                                    exact: entry.key == query, kind: .zone, subOrder: 1, population: group.population))
+                                                    exact: wholeWords, kind: wholeWords ? .region : .zone, subOrder: wholeWords ? 0 : 1,
+                                                    population: group.population))
                     }
                 }
             }
