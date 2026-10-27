@@ -34,6 +34,13 @@ public func offsetLabel(at date: Date, cityZone: TimeZone, userZone: TimeZone) -
     return rest == 0 ? "\(sign)\(hours) hrs" : "\(sign)\(hours):\(String(format: "%02d", rest)) hrs"
 }
 
+/// For compact rows: "−14 hrs", or "Tomorrow · +3 hrs" when the city is on another day.
+public func compactDifference(at date: Date, cityZone: TimeZone, userZone: TimeZone) -> String {
+    let offset = offsetLabel(at: date, cityZone: cityZone, userZone: userZone)
+    let day = dayRelation(at: date, cityZone: cityZone, userZone: userZone)
+    return day == .today ? offset : "\(day.label) · \(offset)"
+}
+
 /// "12:10" + "AM" on a 12-hour Mac, "17:10" + nil on a 24-hour one. `hourCycle` overrides the Mac.
 public func timeParts(_ date: Date, in zone: TimeZone, locale: Locale, hourCycle: HourCycle = .system) -> (time: String, period: String?) {
     let twelveHour: Bool

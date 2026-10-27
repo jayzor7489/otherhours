@@ -56,9 +56,15 @@ private struct ListRow: View {
         HStack(spacing: 10) {
             Text(place.flag).font(.system(size: full ? 22 : 18))
             VStack(alignment: .leading, spacing: 1) {
-                (Text(place.name).fontWeight(.semibold)
-                    + Text(place.isYou ? " · you" : "").foregroundColor(.secondary))
-                    .font(.system(size: 14)).lineLimit(1)
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    (Text(place.name).fontWeight(.semibold)
+                        + Text(place.isYou ? " · you" : "").foregroundColor(.secondary))
+                        .font(.system(size: 14)).lineLimit(1)
+                    if !full && !place.isYou {  // compact rows have no second line: keep the difference
+                        Text(compactDifference(at: date, cityZone: place.zone, userZone: userZone))
+                            .font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1).fixedSize()
+                    }
+                }
                 if full {
                     Text(subLine(for: place, date: date, userZone: userZone, locale: locale))
                         .font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)

@@ -58,3 +58,10 @@ private let t = date("2026-10-27T06:10:00Z")
     #expect(p.time == "2:10")
     #expect(p.period != nil)
 }
+
+/// Compact rows have no second line: the difference sits next to the name, the day only when it differs.
+@Test func compactDifferenceLabel() {
+    #expect(compactDifference(at: t, cityZone: tz("America/Denver"), userZone: tz("Asia/Manila")) == "−14 hrs")
+    #expect(compactDifference(at: t, cityZone: tz("Pacific/Honolulu"), userZone: tz("Asia/Manila")) == "Yesterday · −18 hrs")
+    #expect(compactDifference(at: t, cityZone: tz("Asia/Singapore"), userZone: tz("Asia/Manila")) == "Same time")
+}

@@ -98,10 +98,16 @@ struct PlaceRow: View {
         Bar(band: band, style: style, monochrome: monochrome) {
             Text(flag).font(.system(size: full ? 18 : 16))
             VStack(alignment: .leading, spacing: 1) {
-                (Text(name).fontWeight(.semibold)
-                    + Text(isYou ? " · you" : "").fontWeight(.regular).foregroundColor(.white.opacity(0.7)))
-                    .font(.system(size: full ? 13 : 14))
-                    .lineLimit(1)
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    (Text(name).fontWeight(.semibold)
+                        + Text(isYou ? " · you" : "").fontWeight(.regular).foregroundColor(.white.opacity(0.7)))
+                        .font(.system(size: full ? 13 : 14))
+                        .lineLimit(1)
+                    if !full && !isYou {  // compact rows have no second line: keep the difference
+                        Text(compactDifference(at: date, cityZone: zone, userZone: userZone))
+                            .font(.system(size: 10.5)).opacity(0.78).lineLimit(1).fixedSize()
+                    }
+                }
                 if full {
                     Text(WorldClockViews.subLine(for: Place(name: name, flag: flag, zone: zone, isYou: isYou), date: date, userZone: userZone, locale: locale))
                         .font(.system(size: 10)).opacity(0.78).lineLimit(1)

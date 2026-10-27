@@ -61,7 +61,7 @@ struct ClocksThemeView: View {
     }
 }
 
-/// One face. Night: black face, grey ticks, white hands. Dawn to dusk: white face, dark hands.
+/// One face. Night: black face, grey marks, white hands and numbers. Dawn to dusk: white face, dark hands.
 struct AnalogFace: View {
     let zone: TimeZone
     let date: Date
@@ -87,12 +87,18 @@ struct AnalogFace: View {
                 context.stroke(Circle().path(in: CGRect(origin: .zero, size: size).insetBy(dx: r * 0.02, dy: r * 0.02)),
                                with: .color(Color(white: 0.23)), lineWidth: r * 0.04)
             }
-            for quarter in 0..<4 {
-                let angle = Double(quarter) * .pi / 2
-                var tick = Path()
-                tick.move(to: point(centre, r * 0.84, angle))
-                tick.addLine(to: point(centre, r * 0.70, angle))
-                context.stroke(tick, with: .color(ticks), style: StrokeStyle(lineWidth: r * 0.06, lineCap: .round))
+            // Hour marks, with 12, 3, 6 and 9 as numbers (Jason picked this over ticks only or all twelve).
+            for hour in 0..<12 {
+                let angle = Double(hour) / 12 * 2 * .pi
+                if hour % 3 == 0 {
+                    context.draw(Text("\(hour == 0 ? 12 : hour)").font(.system(size: r * 0.26, weight: .semibold)).foregroundColor(ink),
+                                 at: point(centre, r * 0.70, angle))
+                } else {
+                    var tick = Path()
+                    tick.move(to: point(centre, r * 0.92, angle))
+                    tick.addLine(to: point(centre, r * 0.80, angle))
+                    context.stroke(tick, with: .color(ticks), style: StrokeStyle(lineWidth: r * 0.045, lineCap: .round))
+                }
             }
             hand(&context, centre, length: r * 0.48, width: r * 0.10, angle: minutes / 720 * 2 * .pi, colour: ink)
             hand(&context, centre, length: r * 0.72, width: r * 0.06, angle: minutes.truncatingRemainder(dividingBy: 60) / 60 * 2 * .pi, colour: ink)
