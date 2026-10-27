@@ -35,7 +35,9 @@ public struct MenuPanelView: View {
 
     public var body: some View {
         VStack(spacing: 10) {
-            if rows.count > Self.rowsBeforeScrolling {
+            if theme == .clocks && rows.count > 9 {
+                ScrollView { content }.frame(height: 3 * 120)  // 3 rows of faces, then scroll
+            } else if theme != .clocks && rows.count > Self.rowsBeforeScrolling {
                 ScrollView { content }
                     .frame(height: CGFloat(Self.rowsBeforeScrolling) * (Self.rowHeight + 6) - 6)
             } else {
@@ -58,7 +60,13 @@ public struct MenuPanelView: View {
 
     @ViewBuilder private var content: some View {
         switch theme {
-        case .dayNight, .clocks: list
+        case .dayNight: list
+        case .clocks:
+            TimelineView(.everyMinute) { context in
+                ClocksThemeView(rows: rows, date: fixedDate ?? context.date, userZone: userZone, size: nil, monochrome: false,
+                                locale: locale, emptyNote: "Add cities in Settings")
+            }
+            .padding(.vertical, 6)
         case .list:
             TimelineView(.everyMinute) { context in
                 ListThemeView(rows: rows, date: fixedDate ?? context.date, userZone: userZone, size: nil, locale: locale,

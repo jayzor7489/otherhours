@@ -1,14 +1,17 @@
 import SwiftUI
 import WorldClockCore
 
-/// The card behind each theme. Day & Night and Clocks are always dark (mockups B, C); List and
-/// Spotlight are white in light mode (mockups A, D) and get a dark card in dark mode.
+/// The card behind each theme. Day & Night (mockup B, navy) and Clocks (mockup C, graphite) are
+/// always dark; List and Spotlight are white in light mode (mockups A, D) and graphite in dark mode.
 public func widgetBackground(theme: Theme, colorScheme: ColorScheme) -> Color {
     switch theme {
-    case .dayNight, .clocks: return widgetBackground
-    case .list, .spotlight: return colorScheme == .dark ? Color(red: 0x1C / 255, green: 0x1C / 255, blue: 0x1E / 255) : .white
+    case .dayNight: return widgetBackground
+    case .clocks: return graphite
+    case .list, .spotlight: return colorScheme == .dark ? graphite : .white
     }
 }
+
+private let graphite = Color(red: 0x1C / 255, green: 0x1C / 255, blue: 0x1E / 255)
 
 /// Themes that follow the Mac's light or dark appearance.
 public extension Theme {

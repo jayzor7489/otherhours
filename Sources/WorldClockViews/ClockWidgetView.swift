@@ -27,7 +27,11 @@ public struct ClockWidgetView: View {
 
     public var body: some View {
         switch theme {
-        case .dayNight, .clocks: dayNight
+        case .dayNight: dayNight
+        case .clocks:
+            ClocksThemeView(rows: rows, date: date, userZone: userZone, size: size, monochrome: monochrome, locale: locale,
+                            emptyNote: Self.emptyNote)
+                .foregroundStyle(.white)
         case .list:
             ListThemeView(rows: rows, date: date, userZone: userZone, size: size, locale: locale, hourCycle: hourCycle,
                           emptyNote: Self.emptyNote)

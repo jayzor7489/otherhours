@@ -52,6 +52,11 @@ let scenarios: [Scenario] = [
     Scenario(name: "medium-empty", size: .medium, cities: ""),
     Scenario(name: "medium-usual-mono", size: .medium, cities: usual, monochrome: true),
     Scenario(name: "large-eight-mono", size: .large, cities: eight, monochrome: true),
+    Scenario(name: "clocks-medium", size: .medium, cities: usual, theme: .clocks),
+    Scenario(name: "clocks-medium-overflow", size: .medium, cities: "Denver, London, Sydney, Tokyo, Dubai", theme: .clocks),
+    Scenario(name: "clocks-large", size: .large, cities: eight, theme: .clocks),
+    Scenario(name: "clocks-medium-mono", size: .medium, cities: usual, monochrome: true, theme: .clocks),
+    Scenario(name: "clocks-medium-empty", size: .medium, cities: "", theme: .clocks),
 ] + [Theme.list, .spotlight].flatMap { theme in [
     Scenario(name: "\(theme.rawValue)-medium", size: .medium, cities: usual, theme: theme),
     Scenario(name: "\(theme.rawValue)-medium-dark", size: .medium, cities: usual, theme: theme, dark: true),
@@ -105,4 +110,5 @@ MainActor.assumeIsolated {
     try! renderPanel(name: "panel-list", cities: "Denver, London, Cairns", theme: .list)
     try! renderPanel(name: "panel-list-dark", cities: "Denver, London, Cairns", theme: .list, dark: true)
     try! renderPanel(name: "panel-spotlight", cities: "Denver, London, Cairns", theme: .spotlight)
+    try! renderPanel(name: "panel-clocks", cities: "Denver, London, Cairns, Tokyo", theme: .clocks)
 }
