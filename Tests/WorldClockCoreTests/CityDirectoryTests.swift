@@ -44,10 +44,37 @@ import Testing
     #expect(fixture.countryCode(forTimeZoneID: "Mars/Olympus") == nil)
 }
 
-@Test func realFileLoadsAndFindsUsualCities() throws {
+private let realDirectory: CityDirectory = {
     let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
         .appendingPathComponent("../../Resources/cities.tsv").standardized
-    let dir = try CityDirectory.load(contentsOf: url)
+    return try! CityDirectory.load(contentsOf: url)
+}()
+
+/// A small namesake must not hide a place that has its own time zone (review finding:
+/// "Puerto Rico" was a town in Colombia, "Jersey" was Jersey City).
+@Test func timeZonePlacesBeatSmallNamesakes() {
+    let expected = [
+        "Puerto Rico": "America/Puerto_Rico", "Jamaica": "America/Jamaica", "Costa Rica": "America/Costa_Rica",
+        "Palau": "Pacific/Palau", "Jersey": "Europe/Jersey", "Chatham": "Pacific/Chatham", "Stanley": "Atlantic/Stanley",
+    ]
+    for (typed, zone) in expected {
+        #expect(realDirectory.resolve(.init(name: typed, countryCode: nil))?.timeZone.identifier == zone, "\(typed)")
+    }
+}
+
+@Test func calcuttaIsKolkata() {
+    let city = realDirectory.resolve(.init(name: "Calcutta", countryCode: nil))
+    #expect(city?.countryCode == "IN")
+}
+
+@Test func bigCitiesStillWinTheirOwnName() {
+    #expect(realDirectory.resolve(.init(name: "Denver", countryCode: nil))?.displayName == "Denver")
+    #expect(realDirectory.resolve(.init(name: "Guatemala", countryCode: nil))?.timeZone.identifier == "America/Guatemala")
+    #expect(realDirectory.resolve(.init(name: "Panama", countryCode: nil))?.timeZone.identifier == "America/Panama")
+}
+
+@Test func realFileLoadsAndFindsUsualCities() throws {
+    let dir = realDirectory
     for name in ["Denver", "London", "Sydney", "Manila", "San Francisco", "Cebu", "New York"] {
         #expect(dir.resolve(.init(name: name, countryCode: nil)) != nil, "\(name)")
     }

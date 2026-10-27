@@ -28,7 +28,11 @@ public final class CityDirectory {
     static let aliases: [String: String] = [
         "nyc": "New York City", "la": "Los Angeles", "sf": "San Francisco",
         "kl": "Kuala Lumpur", "hcmc": "Ho Chi Minh City", "dc": "Washington",
+        "calcutta": "Kolkata",
     ]
+
+    /// A namesake smaller than this never hides a place that has its own time zone.
+    static let majorCityPopulation = 1_000_000
 
     private let records: [CityRecord]
     private var byKey: [String: [Int]] = [:]
@@ -66,10 +70,16 @@ public final class CityDirectory {
             .map { records[$0] }
             .filter { query.countryCode == nil || $0.countryCode == query.countryCode }
             .max { $0.population < $1.population }
+        let zonePlace = zoneFallback(key: key, countryCode: query.countryCode)
         if let best, let zone = TimeZone(identifier: best.timeZoneID) {
+            // "Puerto Rico" is a zone and also a small town in Colombia: the zone wins.
+            if let zonePlace, zonePlace.timeZone.identifier != best.timeZoneID,
+               best.population < Self.majorCityPopulation {
+                return zonePlace
+            }
             return ResolvedCity(displayName: best.name, countryCode: best.countryCode, timeZone: zone)
         }
-        return zoneFallback(key: key, countryCode: query.countryCode)
+        return zonePlace
     }
 
     public func countryCode(forTimeZoneID id: String) -> String? {
