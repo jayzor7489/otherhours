@@ -62,15 +62,16 @@ struct WorldClockEntryView: View {
     let entry: ClockEntry
     @Environment(\.widgetFamily) private var family
     @Environment(\.widgetRenderingMode) private var renderingMode
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ClockWidgetView(rows: entry.rows, date: entry.date, userZone: entry.userZone,
                         size: family == .systemLarge ? .large : .medium,
                         monochrome: renderingMode != .fullColor,
-                        locale: .autoupdatingCurrent, hourCycle: entry.settings.hourCycle)
+                        locale: .autoupdatingCurrent, hourCycle: entry.settings.hourCycle, theme: entry.settings.theme)
             .padding(9)
             // Handed to the system rather than drawn as content, so tinted/clear styles can replace it.
-            .containerBackground(widgetBackground, for: .widget)
+            .containerBackground(widgetBackground(theme: entry.settings.theme, colorScheme: colorScheme), for: .widget)
     }
 }
 

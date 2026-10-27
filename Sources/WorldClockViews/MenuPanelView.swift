@@ -11,6 +11,7 @@ public struct MenuPanelView: View {
     let userZone: TimeZone
     let locale: Locale
     let hourCycle: HourCycle
+    let theme: Theme
     let note: String
     @Binding var openAtLogin: Bool
     let onHowTo: () -> Void
@@ -18,12 +19,13 @@ public struct MenuPanelView: View {
     let fixedDate: Date?
 
     /// `fixedDate` is for preview renders; the app leaves it nil to follow the clock.
-    public init(rows: [ClockRow], userZone: TimeZone, locale: Locale, hourCycle: HourCycle, note: String, openAtLogin: Binding<Bool>,
+    public init(rows: [ClockRow], userZone: TimeZone, locale: Locale, hourCycle: HourCycle, theme: Theme, note: String, openAtLogin: Binding<Bool>,
                 onHowTo: @escaping () -> Void, onQuit: @escaping () -> Void, fixedDate: Date? = nil) {
         self.rows = rows
         self.userZone = userZone
         self.locale = locale
         self.hourCycle = hourCycle
+        self.theme = theme
         self.note = note
         self._openAtLogin = openAtLogin
         self.onHowTo = onHowTo
@@ -34,18 +36,40 @@ public struct MenuPanelView: View {
     public var body: some View {
         VStack(spacing: 10) {
             if rows.count > Self.rowsBeforeScrolling {
-                ScrollView { list }
+                ScrollView { content }
                     .frame(height: CGFloat(Self.rowsBeforeScrolling) * (Self.rowHeight + 6) - 6)
             } else {
-                list
+                content
             }
             footer
         }
         .padding(10)
         .frame(width: 330)
-        .foregroundStyle(.white)
-        .background(widgetBackground)
-        .environment(\.colorScheme, .dark)
+        .foregroundStyle(theme.followsAppearance ? AnyShapeStyle(.primary) : AnyShapeStyle(.white))
+        .background(MenuPanelView.background(theme))
+        .environment(\.colorScheme, theme.followsAppearance ? colorScheme : .dark)
+    }
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    private static func background(_ theme: Theme) -> some View {
+        AppearanceBackground(theme: theme)
+    }
+
+    @ViewBuilder private var content: some View {
+        switch theme {
+        case .dayNight, .clocks: list
+        case .list:
+            TimelineView(.everyMinute) { context in
+                ListThemeView(rows: rows, date: fixedDate ?? context.date, userZone: userZone, size: nil, locale: locale,
+                              hourCycle: hourCycle, emptyNote: "Add cities in Settings")
+            }
+        case .spotlight:
+            TimelineView(.everyMinute) { context in
+                SpotlightThemeView(rows: rows, date: fixedDate ?? context.date, userZone: userZone, size: nil, locale: locale,
+                                   hourCycle: hourCycle, emptyNote: "Add cities in Settings")
+            }
+        }
     }
 
     private var list: some View {
@@ -81,4 +105,11 @@ public struct MenuPanelView: View {
         }
         .padding(.horizontal, 4)
     }
+}
+
+/// The panel's card, reading the appearance it is drawn in.
+private struct AppearanceBackground: View {
+    let theme: Theme
+    @Environment(\.colorScheme) private var colorScheme
+    var body: some View { widgetBackground(theme: theme, colorScheme: colorScheme) }
 }

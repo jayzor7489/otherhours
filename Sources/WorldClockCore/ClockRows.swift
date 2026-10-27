@@ -39,11 +39,23 @@ public struct RowLayout: Equatable {
     }
 }
 
-/// Full rows while they fit, then compact rows, then compact rows with a "+N more" last slot.
-public func layout(rowCount: Int, size: WidgetSize) -> RowLayout {
+/// How many rows a widget shows (own time included). Day & Night and List: full rows while they
+/// fit, then compact rows, then compact rows with a "+N more" last slot. Clocks and Spotlight have
+/// one cap each (faces and a hero have no compact form); over it, cap − 1 rows and "+N more".
+public func layout(rowCount: Int, size: WidgetSize, theme: Theme) -> RowLayout {
+    switch theme {
+    case .clocks: return capped(rowCount, cap: size == .medium ? 4 : 9)
+    case .spotlight: return capped(rowCount, cap: size == .medium ? 4 : 10)
+    case .dayNight, .list: break
+    }
     let (fullLimit, compactLimit) = size == .medium ? (3, 5) : (7, 10)
     if rowCount <= fullLimit { return RowLayout(style: .full, visibleCount: rowCount, overflowCount: 0) }
     if rowCount <= compactLimit { return RowLayout(style: .compact, visibleCount: rowCount, overflowCount: 0) }
     let visible = compactLimit - 1
     return RowLayout(style: .compact, visibleCount: visible, overflowCount: rowCount - visible)
+}
+
+private func capped(_ rowCount: Int, cap: Int) -> RowLayout {
+    rowCount <= cap ? RowLayout(style: .full, visibleCount: rowCount, overflowCount: 0)
+                    : RowLayout(style: .full, visibleCount: cap - 1, overflowCount: rowCount - (cap - 1))
 }

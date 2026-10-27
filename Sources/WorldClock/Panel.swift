@@ -24,7 +24,7 @@ struct PanelHost: View {
 
     var body: some View {
         MenuPanelView(rows: model.rows, userZone: model.userZone, locale: .autoupdatingCurrent,
-                      hourCycle: model.settings.hourCycle, note: "",
+                      hourCycle: model.settings.hourCycle, theme: model.settings.theme, note: "",
                       openAtLogin: Binding(get: { model.openAtLogin },
                                            set: { LoginItem.set($0); model.openAtLogin = LoginItem.isOn }),
                       onHowTo: onHowTo, onQuit: { NSApp.terminate(nil) })

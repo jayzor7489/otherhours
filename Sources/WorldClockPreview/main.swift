@@ -32,46 +32,64 @@ func saved(_ names: String) -> [SavedCity] {
     }
 }
 
-let scenarios: [(name: String, size: WidgetSize, cities: String, monochrome: Bool)] = [
-    ("medium-usual", .medium, "Denver, London, Sydney", false),
-    ("medium-two", .medium, "Denver, London", false),
-    ("medium-overflow", .medium, "Denver, London, Sydney, Tokyo, Dubai, Honolulu", false),
-    ("large-eight", .large, "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu", false),
-    ("large-overflow", .large, "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu, Paris, Auckland, Honolulu, Cebu City, San Francisco", false),
-    ("medium-empty", .medium, "", false),
-    ("medium-usual-mono", .medium, "Denver, London, Sydney", true),
-    ("large-eight-mono", .large, "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu", true),
-]
+struct Scenario {
+    let name: String
+    let size: WidgetSize
+    let cities: String
+    var monochrome = false
+    var theme = Theme.dayNight
+    var dark = false
+}
 
-@MainActor func render(_ s: (name: String, size: WidgetSize, cities: String, monochrome: Bool)) throws {
+let usual = "Denver, London, Sydney"
+let eight = "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu"
+let scenarios: [Scenario] = [
+    Scenario(name: "medium-usual", size: .medium, cities: usual),
+    Scenario(name: "medium-two", size: .medium, cities: "Denver, London"),
+    Scenario(name: "medium-overflow", size: .medium, cities: "Denver, London, Sydney, Tokyo, Dubai, Honolulu"),
+    Scenario(name: "large-eight", size: .large, cities: eight),
+    Scenario(name: "large-overflow", size: .large, cities: "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu, Paris, Auckland, Honolulu, Cebu City, San Francisco"),
+    Scenario(name: "medium-empty", size: .medium, cities: ""),
+    Scenario(name: "medium-usual-mono", size: .medium, cities: usual, monochrome: true),
+    Scenario(name: "large-eight-mono", size: .large, cities: eight, monochrome: true),
+] + [Theme.list, .spotlight].flatMap { theme in [
+    Scenario(name: "\(theme.rawValue)-medium", size: .medium, cities: usual, theme: theme),
+    Scenario(name: "\(theme.rawValue)-medium-dark", size: .medium, cities: usual, theme: theme, dark: true),
+    Scenario(name: "\(theme.rawValue)-large", size: .large, cities: eight + ", Paris, Auckland, Honolulu", theme: theme),
+    Scenario(name: "\(theme.rawValue)-medium-empty", size: .medium, cities: "", theme: theme),
+] }
+
+@MainActor func render(_ s: Scenario) throws {
     let (width, height): (CGFloat, CGFloat) = s.size == .medium ? (344, 164) : (344, 354)
     let rows = makeRows(saved: saved(s.cities), userZone: userZone, directory: directory)
+    let scheme: ColorScheme = s.dark ? .dark : .light
     let view = ClockWidgetView(rows: rows, date: date, userZone: userZone, size: s.size, monochrome: s.monochrome, locale: locale,
-                               hourCycle: .system)
+                               hourCycle: .system, theme: s.theme)
         .padding(9)
         .frame(width: width, height: height)
         // Monochrome stands in for the system's vibrant material with a neutral grey card.
-        .background(s.monochrome ? Color(white: 0.28) : widgetBackground)
+        .background(s.monochrome ? Color(white: 0.28) : widgetBackground(theme: s.theme, colorScheme: scheme))
         .clipShape(RoundedRectangle(cornerRadius: 27.88, style: .continuous))
+        .environment(\.colorScheme, scheme)
         .padding(16)
         .background(LinearGradient(colors: [Color(red: 0.49, green: 0.61, blue: 0.79), Color(red: 0.11, green: 0.31, blue: 0.61)],
                                    startPoint: .topLeading, endPoint: .bottomTrailing))
-    let renderer = ImageRenderer(content: view)
-    renderer.scale = 2
-    guard let cg = renderer.cgImage else { throw CocoaError(.fileWriteUnknown) }
-    let png = NSBitmapImageRep(cgImage: cg).representation(using: .png, properties: [:])!
-    try png.write(to: outDir.appendingPathComponent("\(s.name).png"))
-    print("wrote \(s.name).png")
+    try write(view, s.name)
 }
 
 /// The menu bar panel, on a plain desktop-coloured backdrop.
-@MainActor func renderPanel(name: String, cities: String, note: String) throws {
+@MainActor func renderPanel(name: String, cities: String, theme: Theme = .dayNight, dark: Bool = false) throws {
     let rows = makeRows(saved: saved(cities), userZone: userZone, directory: directory)
-    let view = MenuPanelView(rows: rows, userZone: userZone, locale: locale, hourCycle: .system, note: note, openAtLogin: .constant(true),
-                             onHowTo: {}, onQuit: {}, fixedDate: date)
+    let view = MenuPanelView(rows: rows, userZone: userZone, locale: locale, hourCycle: .system, theme: theme, note: "",
+                             openAtLogin: .constant(true), onHowTo: {}, onQuit: {}, fixedDate: date)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .environment(\.colorScheme, dark ? .dark : .light)
         .padding(16)
         .background(Color(red: 0.11, green: 0.31, blue: 0.61))
+    try write(view, name)
+}
+
+@MainActor func write(_ view: some View, _ name: String) throws {
     let renderer = ImageRenderer(content: view)
     renderer.scale = 2
     guard let cg = renderer.cgImage else { throw CocoaError(.fileWriteUnknown) }
@@ -82,7 +100,9 @@ let scenarios: [(name: String, size: WidgetSize, cities: String, monochrome: Boo
 
 MainActor.assumeIsolated {
     for s in scenarios { try! render(s) }
-    try! renderPanel(name: "panel-usual", cities: "Denver, London, Cairns", note: "")
-    try! renderPanel(name: "panel-long", cities: "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu, Paris, Auckland, Honolulu",
-                     note: "")
+    try! renderPanel(name: "panel-usual", cities: "Denver, London, Cairns")
+    try! renderPanel(name: "panel-long", cities: "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu, Paris, Auckland, Honolulu")
+    try! renderPanel(name: "panel-list", cities: "Denver, London, Cairns", theme: .list)
+    try! renderPanel(name: "panel-list-dark", cities: "Denver, London, Cairns", theme: .list, dark: true)
+    try! renderPanel(name: "panel-spotlight", cities: "Denver, London, Cairns", theme: .spotlight)
 }

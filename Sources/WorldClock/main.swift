@@ -126,6 +126,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         guard let button = statusItem?.button else { return }
         model.refresh()
+        popover.appearance = model.settings.theme.followsAppearance ? nil : NSAppearance(named: .darkAqua)
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
     }
 

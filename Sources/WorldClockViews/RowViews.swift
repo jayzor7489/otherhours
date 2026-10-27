@@ -103,7 +103,8 @@ struct PlaceRow: View {
                     .font(.system(size: full ? 13 : 14))
                     .lineLimit(1)
                 if full {
-                    Text(subLine).font(.system(size: 10)).opacity(0.78).lineLimit(1)
+                    Text(WorldClockViews.subLine(for: Place(name: name, flag: flag, zone: zone, isYou: isYou), date: date, userZone: userZone, locale: locale))
+                        .font(.system(size: 10)).opacity(0.78).lineLimit(1)
                 }
             }
             .layoutPriority(1)
@@ -117,18 +118,6 @@ struct PlaceRow: View {
             }
             .fixedSize()
         }
-    }
-
-    private var subLine: String {
-        if isYou {
-            let formatter = DateFormatter()
-            formatter.locale = locale
-            formatter.timeZone = zone
-            formatter.setLocalizedDateFormatFromTemplate("EEEMMMd")
-            return formatter.string(from: date)
-        }
-        let day = dayRelation(at: date, cityZone: zone, userZone: userZone).label
-        return "\(day) · \(offsetLabel(at: date, cityZone: zone, userZone: userZone))"
     }
 }
 
