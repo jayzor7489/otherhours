@@ -6,6 +6,8 @@ let package = Package(
     platforms: [.macOS(.v14)],
     targets: [
         .target(name: "WorldClockCore"),
+        .target(name: "WorldClockViews", dependencies: ["WorldClockCore"]),
+        .executableTarget(name: "WorldClockPreview", dependencies: ["WorldClockCore", "WorldClockViews"]),
         .testTarget(name: "WorldClockCoreTests", dependencies: ["WorldClockCore"]),
     ],
     swiftLanguageModes: [.v5]
