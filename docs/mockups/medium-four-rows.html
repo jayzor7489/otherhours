@@ -1,0 +1,50 @@
+<h2>Your usual set on a medium widget: which one?</h2>
+<p class="subtitle">You (Manila) + Denver, London, Sydney = 4 rows. Real medium size (344 × 164), style B. Times as of 2:10 PM Manila.</p>
+
+<style>
+  .desk { background: linear-gradient(160deg,#7d9cc9 0%,#3b6fb6 55%,#1d4f9c 100%); border-radius: 14px; padding: 22px; display:flex; justify-content:center; }
+  .w { width:344px; height:164px; border-radius:28px; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.18); background:#0f1420; color:#fff; padding:9px; display:flex; flex-direction:column; gap:4px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .row { flex:1; border-radius:10px; display:flex; align-items:center; gap:8px; padding:0 11px; }
+  .night { background:linear-gradient(90deg,#1b2340,#2b2f5c); }
+  .dawn  { background:linear-gradient(90deg,#3d4f86,#e59b74); }
+  .day   { background:linear-gradient(90deg,#3f8fe0,#8cc8f5); }
+  .eve   { background:linear-gradient(90deg,#4a8fd8,#f2b45c); }
+  .flag { font-size:15px; }
+  .name { font-weight:600; font-size:12px; line-height:1.1; }
+  .sub { font-size:9px; opacity:.8; line-height:1.1; }
+  .t { margin-left:auto; font-size:16px; font-weight:500; }
+  .t small { font-size:9px; opacity:.8; margin-left:2px; }
+  .icon { font-size:11px; }
+  .compact .name { font-size:13px; }
+  .compact .t { font-size:17px; }
+  .you { font-weight:400; opacity:.75; font-size:11px; }
+</style>
+
+<div class="cards">
+
+  <div class="card" data-choice="full-tight" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="desk">
+      <div class="w">
+        <div class="row day"><span class="flag">🇵🇭</span><div><div class="name">Manila <span class="you">· you</span></div><div class="sub">Tue, Oct 27</div></div><span class="icon">☀️</span><div class="t num">2:10<small>PM</small></div></div>
+        <div class="row night"><span class="flag">🇺🇸</span><div><div class="name">Denver</div><div class="sub">Today · −14 hrs</div></div><span class="icon">🌙</span><div class="t num">12:10<small>AM</small></div></div>
+        <div class="row dawn"><span class="flag">🇬🇧</span><div><div class="name">London</div><div class="sub">Today · −8 hrs</div></div><span class="icon">🌅</span><div class="t num">6:10<small>AM</small></div></div>
+        <div class="row eve"><span class="flag">🇦🇺</span><div><div class="name">Sydney</div><div class="sub">Today · +3 hrs</div></div><span class="icon">🌇</span><div class="t num">5:10<small>PM</small></div></div>
+      </div>
+    </div></div>
+    <div class="card-body"><h3>1 · Keep the details, slightly smaller</h3><p>All four rows keep the "Today · −14 hrs" line; text is a bit smaller to fit. Compact only kicks in from 5 rows.</p></div>
+  </div>
+
+  <div class="card" data-choice="compact" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="desk">
+      <div class="w compact">
+        <div class="row day"><span class="flag">🇵🇭</span><div class="name">Manila <span class="you">· you</span></div><span class="icon">☀️</span><div class="t num">2:10<small>PM</small></div></div>
+        <div class="row night"><span class="flag">🇺🇸</span><div class="name">Denver</div><span class="icon">🌙</span><div class="t num">12:10<small>AM</small></div></div>
+        <div class="row dawn"><span class="flag">🇬🇧</span><div class="name">London</div><span class="icon">🌅</span><div class="t num">6:10<small>AM</small></div></div>
+        <div class="row eve"><span class="flag">🇦🇺</span><div class="name">Sydney</div><span class="icon">🌇</span><div class="t num">5:10<small>PM</small></div></div>
+      </div>
+    </div></div>
+    <div class="card-body"><h3>2 · Compact, bigger text</h3><p>Drops the "Today · −14 hrs" line so names and times are larger and easier to read at a glance. The full lines show on a large widget.</p></div>
+  </div>
+
+</div>

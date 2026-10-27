@@ -1,0 +1,114 @@
+<h2>Which look feels right for your world clock?</h2>
+<p class="subtitle">Same three cities from your screenshot, at real widget size (medium, 344 × 164). Times are as of 2:10 PM Manila. Click the one you like; you can also tell me to mix parts of two.</p>
+
+<style>
+  .desk { background: linear-gradient(160deg,#7d9cc9 0%,#3b6fb6 55%,#1d4f9c 100%); border-radius: 14px; padding: 22px; display:flex; justify-content:center; }
+  .w { width:344px; height:164px; border-radius:28px; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.18); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* A refined list */
+  .a { background:#fff; color:#111; padding:14px 18px; display:flex; flex-direction:column; justify-content:space-between; }
+  .a .row { display:flex; align-items:center; gap:10px; }
+  .a .row + .row { border-top:0.5px solid rgba(0,0,0,.10); padding-top:6px; }
+  .a .flag { font-size:22px; line-height:1; }
+  .a .name { font-weight:600; font-size:14px; }
+  .a .sub { font-size:11px; color:#8a8a8e; margin-top:1px; }
+  .a .t { margin-left:auto; font-size:24px; font-weight:300; letter-spacing:-.5px; }
+  .a .t small { font-size:11px; font-weight:500; margin-left:2px; color:#6e6e73; }
+
+  /* B day / night */
+  .b { background:#0f1420; color:#fff; padding:10px; display:flex; flex-direction:column; gap:6px; }
+  .b .row { flex:1; border-radius:12px; display:flex; align-items:center; gap:9px; padding:0 12px; }
+  .b .night { background:linear-gradient(90deg,#1b2340,#2b2f5c); }
+  .b .dawn  { background:linear-gradient(90deg,#3d4f86,#e59b74); }
+  .b .eve   { background:linear-gradient(90deg,#4a8fd8,#f2b45c); }
+  .b .flag { font-size:18px; }
+  .b .name { font-weight:600; font-size:13px; }
+  .b .sub { font-size:10px; opacity:.75; }
+  .b .t { margin-left:auto; font-size:20px; font-weight:500; }
+  .b .t small { font-size:10px; opacity:.8; margin-left:2px; }
+  .b .icon { font-size:13px; opacity:.9; }
+
+  /* C analog faces */
+  .c { background:#1c1c1e; color:#fff; padding:14px 10px; display:flex; justify-content:space-around; align-items:center; }
+  .c .cell { display:flex; flex-direction:column; align-items:center; gap:6px; width:96px; }
+  .c .lbl { font-size:12px; font-weight:600; display:flex; gap:4px; align-items:center; }
+  .c .sub { font-size:10px; color:#98989d; margin-top:-4px; }
+
+  /* D hero + list */
+  .d { background:linear-gradient(180deg,#ffffff,#f3f5f9); color:#111; padding:14px 18px; display:grid; grid-template-columns: 1.1fr 1fr; gap:14px; }
+  .d .hero { display:flex; flex-direction:column; justify-content:center; border-right:0.5px solid rgba(0,0,0,.1); padding-right:12px; }
+  .d .hero .lbl { font-size:12px; color:#6e6e73; display:flex; gap:5px; align-items:center; }
+  .d .hero .big { font-size:40px; font-weight:250; letter-spacing:-1.5px; line-height:1.05; }
+  .d .hero .big small { font-size:14px; font-weight:500; letter-spacing:0; margin-left:3px; color:#6e6e73; }
+  .d .hero .date { font-size:11px; color:#8a8a8e; }
+  .d .list { display:flex; flex-direction:column; justify-content:center; gap:9px; }
+  .d .li { display:flex; align-items:center; gap:7px; font-size:12.5px; }
+  .d .li b { font-weight:600; }
+  .d .li .t { margin-left:auto; font-weight:500; }
+  .d .li .o { font-size:10px; color:#8a8a8e; width:30px; text-align:right; }
+</style>
+
+<div class="cards">
+
+  <div class="card" data-choice="a-refined-list" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="desk">
+      <div class="w a">
+        <div class="row"><span class="flag">🇺🇸</span><div><div class="name">Denver</div><div class="sub">Today · −14 hrs</div></div><div class="t num">12:10<small>AM</small></div></div>
+        <div class="row"><span class="flag">🇬🇧</span><div><div class="name">London</div><div class="sub">Today · −8 hrs</div></div><div class="t num">6:10<small>AM</small></div></div>
+        <div class="row"><span class="flag">🇦🇺</span><div><div class="name">Sydney</div><div class="sub">Today · +3 hrs</div></div><div class="t num">5:10<small>PM</small></div></div>
+      </div>
+    </div></div>
+    <div class="card-body"><h3>A · Refined list</h3><p>Closest to Apple's own style. Bigger, lighter times; day and hour difference under each city.</p></div>
+  </div>
+
+  <div class="card" data-choice="b-day-night" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="desk">
+      <div class="w b">
+        <div class="row night"><span class="flag">🇺🇸</span><div><div class="name">Denver</div><div class="sub">Today · −14 hrs</div></div><span class="icon">🌙</span><div class="t num">12:10<small>AM</small></div></div>
+        <div class="row dawn"><span class="flag">🇬🇧</span><div><div class="name">London</div><div class="sub">Today · −8 hrs</div></div><span class="icon">🌅</span><div class="t num">6:10<small>AM</small></div></div>
+        <div class="row eve"><span class="flag">🇦🇺</span><div><div class="name">Sydney</div><div class="sub">Today · +3 hrs</div></div><span class="icon">☀️</span><div class="t num">5:10<small>PM</small></div></div>
+      </div>
+    </div></div>
+    <div class="card-body"><h3>B · Day / night</h3><p>Each row is coloured by that city's sky right now: night, dawn, day, dusk. Tells you at a glance who's asleep.</p></div>
+  </div>
+
+  <div class="card" data-choice="c-analog" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="desk">
+      <div class="w c">
+        <div class="cell">
+          <svg width="72" height="72" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#000" stroke="#3a3a3c" stroke-width="2"/><g stroke="#8e8e93" stroke-width="3" stroke-linecap="round"><line x1="50" y1="8" x2="50" y2="15"/><line x1="92" y1="50" x2="85" y2="50"/><line x1="50" y1="92" x2="50" y2="85"/><line x1="8" y1="50" x2="15" y2="50"/></g><line x1="50" y1="50" x2="50" y2="26" stroke="#fff" stroke-width="5" stroke-linecap="round" transform="rotate(5 50 50)"/><line x1="50" y1="50" x2="50" y2="14" stroke="#fff" stroke-width="3" stroke-linecap="round" transform="rotate(60 50 50)"/><circle cx="50" cy="50" r="3.5" fill="#ff9f0a"/></svg>
+          <div class="lbl">🇺🇸 Denver</div><div class="sub">−14 hrs</div>
+        </div>
+        <div class="cell">
+          <svg width="72" height="72" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff"/><g stroke="#c7c7cc" stroke-width="3" stroke-linecap="round"><line x1="50" y1="8" x2="50" y2="15"/><line x1="92" y1="50" x2="85" y2="50"/><line x1="50" y1="92" x2="50" y2="85"/><line x1="8" y1="50" x2="15" y2="50"/></g><line x1="50" y1="50" x2="50" y2="26" stroke="#111" stroke-width="5" stroke-linecap="round" transform="rotate(185 50 50)"/><line x1="50" y1="50" x2="50" y2="14" stroke="#111" stroke-width="3" stroke-linecap="round" transform="rotate(60 50 50)"/><circle cx="50" cy="50" r="3.5" fill="#ff9f0a"/></svg>
+          <div class="lbl">🇬🇧 London</div><div class="sub">−8 hrs</div>
+        </div>
+        <div class="cell">
+          <svg width="72" height="72" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff"/><g stroke="#c7c7cc" stroke-width="3" stroke-linecap="round"><line x1="50" y1="8" x2="50" y2="15"/><line x1="92" y1="50" x2="85" y2="50"/><line x1="50" y1="92" x2="50" y2="85"/><line x1="8" y1="50" x2="15" y2="50"/></g><line x1="50" y1="50" x2="50" y2="26" stroke="#111" stroke-width="5" stroke-linecap="round" transform="rotate(155 50 50)"/><line x1="50" y1="50" x2="50" y2="14" stroke="#111" stroke-width="3" stroke-linecap="round" transform="rotate(60 50 50)"/><circle cx="50" cy="50" r="3.5" fill="#ff9f0a"/></svg>
+          <div class="lbl">🇦🇺 Sydney</div><div class="sub">+3 hrs</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="card-body"><h3>C · Analog faces</h3><p>Like Apple's World Clock, but with flags and no four-city cap. Black face = night there, white = day. Fits 4 across; more wrap to a second row in the large size.</p></div>
+  </div>
+
+  <div class="card" data-choice="d-hero-list" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="desk">
+      <div class="w d">
+        <div class="hero">
+          <div class="lbl">🇵🇭 Manila · you</div>
+          <div class="big num">2:10<small>PM</small></div>
+          <div class="date">Tuesday, Oct 27</div>
+        </div>
+        <div class="list">
+          <div class="li"><span>🇺🇸</span><b>Denver</b><span class="t num">12:10 AM</span><span class="o">−14</span></div>
+          <div class="li"><span>🇬🇧</span><b>London</b><span class="t num">6:10 AM</span><span class="o">−8</span></div>
+          <div class="li"><span>🇦🇺</span><b>Sydney</b><span class="t num">5:10 PM</span><span class="o">+3</span></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="card-body"><h3>D · You + the world</h3><p>Your own time big on the left, everyone else listed on the right with their hour difference. Good when the question is always "what time is it for them vs me?"</p></div>
+  </div>
+
+</div>
