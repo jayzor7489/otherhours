@@ -85,8 +85,8 @@ let scenarios: [Scenario] = [
 /// The menu bar panel, on a plain desktop-coloured backdrop.
 @MainActor func renderPanel(name: String, cities: String, theme: Theme = .dayNight, dark: Bool = false) throws {
     let rows = makeRows(saved: saved(cities), userZone: userZone, directory: directory)
-    let view = MenuPanelView(rows: rows, userZone: userZone, locale: locale, hourCycle: .system, theme: theme, note: "",
-                             openAtLogin: .constant(true), onHowTo: {}, onQuit: {}, fixedDate: date)
+    let view = MenuPanelView(rows: rows, userZone: userZone, locale: locale, hourCycle: .system, theme: theme,
+                             openAtLogin: .constant(true), onSettings: {}, onHowTo: {}, onQuit: {}, fixedDate: date)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .environment(\.colorScheme, dark ? .dark : .light)
         .padding(16)

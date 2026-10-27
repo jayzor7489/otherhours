@@ -12,22 +12,23 @@ public struct MenuPanelView: View {
     let locale: Locale
     let hourCycle: HourCycle
     let theme: Theme
-    let note: String
     @Binding var openAtLogin: Bool
+    let onSettings: () -> Void
     let onHowTo: () -> Void
     let onQuit: () -> Void
     let fixedDate: Date?
 
     /// `fixedDate` is for preview renders; the app leaves it nil to follow the clock.
-    public init(rows: [ClockRow], userZone: TimeZone, locale: Locale, hourCycle: HourCycle, theme: Theme, note: String, openAtLogin: Binding<Bool>,
-                onHowTo: @escaping () -> Void, onQuit: @escaping () -> Void, fixedDate: Date? = nil) {
+    public init(rows: [ClockRow], userZone: TimeZone, locale: Locale, hourCycle: HourCycle, theme: Theme, openAtLogin: Binding<Bool>,
+                onSettings: @escaping () -> Void, onHowTo: @escaping () -> Void, onQuit: @escaping () -> Void,
+                fixedDate: Date? = nil) {
         self.rows = rows
         self.userZone = userZone
         self.locale = locale
         self.hourCycle = hourCycle
         self.theme = theme
-        self.note = note
         self._openAtLogin = openAtLogin
+        self.onSettings = onSettings
         self.onHowTo = onHowTo
         self.onQuit = onQuit
         self.fixedDate = fixedDate
@@ -42,6 +43,9 @@ public struct MenuPanelView: View {
                     .frame(height: CGFloat(Self.rowsBeforeScrolling) * (Self.rowHeight + 6) - 6)
             } else {
                 content
+                    // With no cities yet, the whole list ("Add cities in Settings") opens Settings.
+                    .contentShape(Rectangle())
+                    .onTapGesture { if rows.count == 1 { onSettings() } }
             }
             footer
         }
@@ -97,7 +101,9 @@ public struct MenuPanelView: View {
 
     private var footer: some View {
         HStack(spacing: 8) {
-            Text(note).font(.system(size: 11)).opacity(0.6).lineLimit(2)
+            Button("Settings…", action: onSettings)
+                .buttonStyle(.borderless)
+                .font(.system(size: 12, weight: .medium))
             Spacer(minLength: 4)
             Menu {
                 Toggle("Open at Login", isOn: $openAtLogin)

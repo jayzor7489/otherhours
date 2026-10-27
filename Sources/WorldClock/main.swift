@@ -27,11 +27,13 @@ func repairWidget() {
     WidgetCenter.shared.reloadAllTimelines()
 }
 
-/// The city list is shipped once, inside the widget extension; the app reads that copy.
-let directory: CityDirectory = {
-    let url = Bundle.main.bundleURL.appendingPathComponent("Contents/PlugIns/WorldClockWidget.appex/Contents/Resources/cities.tsv")
-    return (try? CityDirectory.load(contentsOf: url)) ?? CityDirectory(records: [])
-}()
+/// The data files are shipped once, inside the widget extension; the app reads those copies.
+func bundledData(_ name: String) -> URL {
+    Bundle.main.bundleURL.appendingPathComponent("Contents/PlugIns/WorldClockWidget.appex/Contents/Resources/\(name)")
+}
+
+let directory: CityDirectory = (try? CityDirectory.load(contentsOf: bundledData("cities.tsv"))) ?? CityDirectory(records: [])
+let abbreviations: [AbbreviationRecord] = (try? loadAbbreviations(contentsOf: bundledData("abbreviations.tsv"))) ?? []
 
 enum LoginItem {
     static var isOn: Bool { SMAppService.mainApp.status == .enabled }
@@ -55,8 +57,8 @@ struct HowToView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("World Clock").font(.title2.bold())
             step(1, "Right-click the desktop, choose **Edit Widgets**, search for **World Clock** and add the medium or large size.")
-            step(2, "Right-click the widget, choose **Edit \"World Clock\"** and type your cities separated by commas, e.g. `Denver, London, Sydney`. Add a country in brackets to pick a namesake: `Sydney (CA)`.")
-            step(3, "Click the globe in the menu bar to see the same cities. With several widgets, it shows the cities of all of them.")
+            step(2, "Click the globe in the menu bar, then **Settings…**. Add cities by searching for a city, state, country or time zone: \"Colorado\" finds Mountain Time.")
+            step(3, "Pick a theme in Settings. The widget and the menu bar panel both follow it.")
             step(4, "If the widget ever turns grey, open this app again. It has just repaired the widget.")
             Divider()
             Text("Your own time is always the first row. Daylight saving is handled by macOS.")
@@ -80,7 +82,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow?
     var statusItem: NSStatusItem?
     let popover = NSPopover()
-    let model = PanelModel()
+    lazy var store: SettingsStore = SettingsStore(defaults: .standard) { [weak self] in
+        WidgetCenter.shared.reloadAllTimelines()
+        self?.model.refresh()
+    }
+    lazy var model: PanelModel = PanelModel(store: store)
+    /// Built on first use: indexing 34,000 cities takes a moment.
+    lazy var placeSearch: PlaceSearch = PlaceSearch(directory: directory,
+                                       regions: (try? loadRegions(contentsOf: bundledData("regions.tsv"))) ?? [],
+                                       abbreviations: abbreviations, displayLocale: .autoupdatingCurrent)
+    lazy var settingsWindow: SettingsWindowController = SettingsWindowController { [unowned self] in
+        SettingsView(store: store, search: { self.placeSearch },
+                     labeller: ZoneLabeller(abbreviations: abbreviations, directory: directory))
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         DispatchQueue.global(qos: .utility).async(execute: repairWidget)
@@ -94,7 +108,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         popover.behavior = .transient
         popover.appearance = NSAppearance(named: .darkAqua)
-        let host = NSHostingController(rootView: PanelHost(model: model, onHowTo: { [weak self] in self?.showHowTo() }))
+        let host = NSHostingController(rootView: PanelHost(model: model, onHowTo: { [weak self] in self?.showHowTo() },
+                                                           onSettings: { [weak self] in self?.showSettings() }))
         host.sizingOptions = .preferredContentSize
         popover.contentViewController = host
 
@@ -128,6 +143,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         model.refresh()
         popover.appearance = model.settings.theme.followsAppearance ? nil : NSAppearance(named: .darkAqua)
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+    }
+
+    func showSettings() {
+        popover.performClose(nil)
+        settingsWindow.show()
     }
 
     func showHowTo() {
