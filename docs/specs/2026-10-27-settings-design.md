@@ -18,6 +18,7 @@ Success: a person who has never seen the app clicks the globe, adds "Colorado" a
 | Adding cities | Search, not typing a list. The search understands what the person means: "Colorado" suggests Denver / Mountain Time (MDT). |
 | How many cities | Slots: a **+** button adds another one. Any number. |
 | Theme | A setting, offering the four looks from the first mockup (`docs/mockups/visual-style.html`). |
+| Long names (2026-10-28) | Flag, sky icon, time and difference keep their size and position in every theme; a long city name is cut ("Colorado Spr…"). The difference shortens before anything else ("−14 hrs" → "−14"). |
 | Earlier answers still standing | Globe icon only in the menu bar; panel shows the same rows; starts at login; no Dock icon; medium and large widgets; compact then "+N more" in the widget when the list is long. |
 
 ## What the person sees
