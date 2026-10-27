@@ -14,3 +14,10 @@ let fixture = CityDirectory(records: [
     CityRecord(name: "London", asciiName: "London", countryCode: "GB", timeZoneID: "Europe/London", population: 8_900_000),
     CityRecord(name: "Denver", asciiName: "Denver", countryCode: "US", timeZoneID: "America/Denver", population: 730_000),
 ])
+
+/// The bundled GeoNames list, for tests that need real data.
+let realDirectory: CityDirectory = try! CityDirectory.load(contentsOf: resourceURL("cities.tsv"))
+
+func resourceURL(_ name: String) -> URL {
+    URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("../../Resources/\(name)").standardized
+}

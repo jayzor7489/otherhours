@@ -3,29 +3,6 @@ import Foundation
 public enum ClockRow: Equatable {
     case you(name: String, flag: String, zone: TimeZone)
     case city(name: String, flag: String, zone: TimeZone)
-    case unknown(typed: String)
-}
-
-/// The user's own row first (from the Mac's zone), then the typed cities in order.
-/// A city matching an earlier row's zone and name (including the user's own) is dropped,
-/// and so is a repeated unknown name.
-public func makeRows(typed: String, userZone: TimeZone, directory: CityDirectory) -> [ClockRow] {
-    let youName = (userZone.identifier.split(separator: "/").last.map(String.init) ?? userZone.identifier)
-        .replacingOccurrences(of: "_", with: " ")
-    var rows: [ClockRow] = [.you(name: youName, flag: flagEmoji(countryCode: directory.countryCode(forTimeZoneID: userZone.identifier)), zone: userZone)]
-    var seen: Set<String> = [seenKey(youName, userZone)]
-
-    for query in parseCityList(typed) {
-        guard let city = directory.resolve(query) else {
-            if seen.insert("?|\(CityDirectory.normalize(query.name))").inserted {
-                rows.append(.unknown(typed: query.name))
-            }
-            continue
-        }
-        guard seen.insert(seenKey(city.displayName, city.timeZone)).inserted else { continue }
-        rows.append(.city(name: city.displayName, flag: flagEmoji(countryCode: city.countryCode), zone: city.timeZone))
-    }
-    return rows
 }
 
 /// The user's own row first (from the Mac's zone), then the saved cities in order. A saved city

@@ -2,8 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- macOS refuses to load an unsandboxed plug-in. No app group: ad-hoc signing cannot carry one. -->
+    <!-- macOS refuses to load an unsandboxed plug-in. No app group: ad-hoc signing cannot carry one.
+         Instead the widget may read the app's own preferences, where Settings saves the cities. -->
     <key>com.apple.security.app-sandbox</key>
     <true/>
+    <key>com.apple.security.temporary-exception.shared-preference.read-only</key>
+    <array>
+        <string>com.jasonaldemita.worldclock</string>
+    </array>
 </dict>
 </plist>

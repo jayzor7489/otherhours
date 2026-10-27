@@ -18,13 +18,26 @@ let date = ISO8601DateFormatter().date(from: "2026-10-27T06:10:00Z")!  // 2:10 P
 let userZone = TimeZone(identifier: "Asia/Manila")!
 let locale = Locale(identifier: "en_US")
 
+/// Preview places, as Settings would save them.
+let places: [String: (String, String)] = [
+    "Denver": ("US", "America/Denver"), "London": ("GB", "Europe/London"), "Sydney": ("AU", "Australia/Sydney"),
+    "Cairns": ("AU", "Australia/Brisbane"), "Tokyo": ("JP", "Asia/Tokyo"), "Dubai": ("AE", "Asia/Dubai"),
+    "Honolulu": ("US", "Pacific/Honolulu"), "New York": ("US", "America/New_York"), "Kathmandu": ("NP", "Asia/Kathmandu"),
+    "Paris": ("FR", "Europe/Paris"), "Auckland": ("NZ", "Pacific/Auckland"), "Cebu City": ("PH", "Asia/Manila"),
+    "San Francisco": ("US", "America/Los_Angeles"),
+]
+func saved(_ names: String) -> [SavedCity] {
+    names.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }.map {
+        SavedCity(name: $0, countryCode: places[$0]!.0, timeZoneID: places[$0]!.1)
+    }
+}
+
 let scenarios: [(name: String, size: WidgetSize, cities: String, monochrome: Bool)] = [
     ("medium-usual", .medium, "Denver, London, Sydney", false),
     ("medium-two", .medium, "Denver, London", false),
     ("medium-overflow", .medium, "Denver, London, Sydney, Tokyo, Dubai, Honolulu", false),
     ("large-eight", .large, "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu", false),
-    ("large-overflow", .large, "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu, Paris, Auckland, Honolulu, Cebu, San Francisco", false),
-    ("medium-unknown", .medium, "Denver, Qwertyville", false),
+    ("large-overflow", .large, "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu, Paris, Auckland, Honolulu, Cebu City, San Francisco", false),
     ("medium-empty", .medium, "", false),
     ("medium-usual-mono", .medium, "Denver, London, Sydney", true),
     ("large-eight-mono", .large, "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu", true),
@@ -32,8 +45,9 @@ let scenarios: [(name: String, size: WidgetSize, cities: String, monochrome: Boo
 
 @MainActor func render(_ s: (name: String, size: WidgetSize, cities: String, monochrome: Bool)) throws {
     let (width, height): (CGFloat, CGFloat) = s.size == .medium ? (344, 164) : (344, 354)
-    let rows = makeRows(typed: s.cities, userZone: userZone, directory: directory)
-    let view = ClockWidgetView(rows: rows, date: date, userZone: userZone, size: s.size, monochrome: s.monochrome, locale: locale)
+    let rows = makeRows(saved: saved(s.cities), userZone: userZone, directory: directory)
+    let view = ClockWidgetView(rows: rows, date: date, userZone: userZone, size: s.size, monochrome: s.monochrome, locale: locale,
+                               hourCycle: .system)
         .padding(9)
         .frame(width: width, height: height)
         // Monochrome stands in for the system's vibrant material with a neutral grey card.
@@ -52,8 +66,8 @@ let scenarios: [(name: String, size: WidgetSize, cities: String, monochrome: Boo
 
 /// The menu bar panel, on a plain desktop-coloured backdrop.
 @MainActor func renderPanel(name: String, cities: String, note: String) throws {
-    let rows = makeRows(typed: cities, userZone: userZone, directory: directory)
-    let view = MenuPanelView(rows: rows, userZone: userZone, locale: locale, note: note, openAtLogin: .constant(true),
+    let rows = makeRows(saved: saved(cities), userZone: userZone, directory: directory)
+    let view = MenuPanelView(rows: rows, userZone: userZone, locale: locale, hourCycle: .system, note: note, openAtLogin: .constant(true),
                              onHowTo: {}, onQuit: {}, fixedDate: date)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .padding(16)
@@ -68,7 +82,7 @@ let scenarios: [(name: String, size: WidgetSize, cities: String, monochrome: Boo
 
 MainActor.assumeIsolated {
     for s in scenarios { try! render(s) }
-    try! renderPanel(name: "panel-usual", cities: "Denver, London, Cairns", note: "Edit cities: right-click your widget › Edit")
+    try! renderPanel(name: "panel-usual", cities: "Denver, London, Cairns", note: "")
     try! renderPanel(name: "panel-long", cities: "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu, Paris, Auckland, Honolulu",
-                     note: "Edit cities: right-click your widget › Edit")
+                     note: "")
 }

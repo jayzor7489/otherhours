@@ -89,10 +89,11 @@ struct PlaceRow: View {
     let style: RowStyle
     let monochrome: Bool
     let locale: Locale
+    let hourCycle: HourCycle
 
     var body: some View {
         let band = SkyBand.at(date, in: zone)
-        let parts = timeParts(date, in: zone, locale: locale)
+        let parts = timeParts(date, in: zone, locale: locale, hourCycle: hourCycle)
         let full = style == .full
         Bar(band: band, style: style, monochrome: monochrome) {
             Text(flag).font(.system(size: full ? 18 : 16))
@@ -139,31 +140,16 @@ struct AnyClockRow: View {
     let style: RowStyle
     let monochrome: Bool
     let locale: Locale
+    let hourCycle: HourCycle
 
     var body: some View {
         switch row {
         case .you(let name, let flag, let zone):
             PlaceRow(name: name, flag: flag, zone: zone, isYou: true, date: date, userZone: userZone,
-                     style: style, monochrome: monochrome, locale: locale)
+                     style: style, monochrome: monochrome, locale: locale, hourCycle: hourCycle)
         case .city(let name, let flag, let zone):
             PlaceRow(name: name, flag: flag, zone: zone, isYou: false, date: date, userZone: userZone,
-                     style: style, monochrome: monochrome, locale: locale)
-        case .unknown(let typed):
-            UnknownRow(typed: typed, style: style, monochrome: monochrome)
-        }
-    }
-}
-
-struct UnknownRow: View {
-    let typed: String
-    let style: RowStyle
-    let monochrome: Bool
-
-    var body: some View {
-        Bar(band: nil, style: style, monochrome: monochrome) {
-            Text("❓").font(.system(size: style == .full ? 16 : 14))
-            Text(typed).font(.system(size: style == .full ? 13 : 14, weight: .semibold)).opacity(0.6).lineLimit(1)
-            Spacer(minLength: 0)
+                     style: style, monochrome: monochrome, locale: locale, hourCycle: hourCycle)
         }
     }
 }

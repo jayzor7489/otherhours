@@ -10,6 +10,7 @@ public struct MenuPanelView: View {
     let rows: [ClockRow]
     let userZone: TimeZone
     let locale: Locale
+    let hourCycle: HourCycle
     let note: String
     @Binding var openAtLogin: Bool
     let onHowTo: () -> Void
@@ -17,11 +18,12 @@ public struct MenuPanelView: View {
     let fixedDate: Date?
 
     /// `fixedDate` is for preview renders; the app leaves it nil to follow the clock.
-    public init(rows: [ClockRow], userZone: TimeZone, locale: Locale, note: String, openAtLogin: Binding<Bool>,
+    public init(rows: [ClockRow], userZone: TimeZone, locale: Locale, hourCycle: HourCycle, note: String, openAtLogin: Binding<Bool>,
                 onHowTo: @escaping () -> Void, onQuit: @escaping () -> Void, fixedDate: Date? = nil) {
         self.rows = rows
         self.userZone = userZone
         self.locale = locale
+        self.hourCycle = hourCycle
         self.note = note
         self._openAtLogin = openAtLogin
         self.onHowTo = onHowTo
@@ -51,8 +53,11 @@ public struct MenuPanelView: View {
             VStack(spacing: 6) {
                 ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                     AnyClockRow(row: row, date: fixedDate ?? context.date, userZone: userZone,
-                                style: .full, monochrome: false, locale: locale)
+                                style: .full, monochrome: false, locale: locale, hourCycle: hourCycle)
                         .frame(height: Self.rowHeight)
+                }
+                if rows.count == 1 {
+                    NoteRow(text: "Add cities in Settings", monochrome: false)
                 }
             }
         }

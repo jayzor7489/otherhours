@@ -34,18 +34,10 @@ cp Resources/Widget-Info.plist "$APPEX/Contents/Info.plist"
 plutil -replace CFBundleVersion -string "$VERSION" "$APP/Contents/Info.plist"
 plutil -replace CFBundleVersion -string "$VERSION" "$APPEX/Contents/Info.plist"
 cp Resources/cities.tsv "$APPEX/Contents/Resources/cities.tsv"
-python3 -I scripts/make_metadata.py "$APPEX/Contents/Resources"
 
 echo "==> Checks"
 nm -u "$EXT_BIN" | grep "_NSExtensionMain" >/dev/null || fail "extension does not start in _NSExtensionMain"
 echo "    ok: entry point _NSExtensionMain"
-for binary in "$EXT_BIN" "$APP/Contents/MacOS/WorldClock"; do   # the app decodes it for the menu bar
-    nm "$binary" | grep "16WorldClockWidget18SelectCitiesIntentV" >/dev/null || fail "SelectCitiesIntent mangled name not in $binary"
-done
-echo "    ok: intent type name matches metadata, in the widget and the app"
-python3 -I -c "import json,sys; json.load(open(sys.argv[1]))" "$APPEX/Contents/Resources/Metadata.appintents/extract.actionsdata" \
-    || fail "metadata JSON does not parse"
-echo "    ok: metadata JSON"
 plutil -lint "$APP/Contents/Info.plist" "$APPEX/Contents/Info.plist" >/dev/null || fail "Info.plist invalid"
 
 echo "==> Sign (ad-hoc): extension first with its sandbox, then the app"
@@ -53,13 +45,16 @@ codesign --force --sign - --timestamp=none --entitlements Resources/Widget.entit
 codesign --force --sign - --timestamp=none "$APP"
 codesign --verify --deep --strict "$APP" || fail "signature does not verify"
 codesign -d --entitlements - "$APPEX" 2>/dev/null | grep app-sandbox >/dev/null || fail "extension lost its sandbox entitlement"
-echo "    ok: signed, sandbox kept"
+codesign -d --entitlements - "$APPEX" 2>/dev/null | grep shared-preference.read-only >/dev/null \
+    || fail "extension cannot read the app's settings (shared-preference exception missing)"
+echo "    ok: signed, sandbox kept, reads the app's settings"
 
 [ "${1:-}" = "--no-install" ] && { echo "==> Built $APP (not installed)"; exit 0; }
 
 echo "==> Install to $INSTALL_DIR"
 killall WorldClockWidget 2>/dev/null || true   # a running extension keeps the old code loaded
 killall WorldClock 2>/dev/null || true         # so does the menu bar app, which stays running
+for _ in $(seq 50); do pgrep -x WorldClock >/dev/null || break; sleep 0.1; done   # `open` fails (-600) while it quits
 mkdir -p "$INSTALL_DIR"
 INSTALLED="$INSTALL_DIR/World Clock.app"
 rm -rf "$INSTALLED"

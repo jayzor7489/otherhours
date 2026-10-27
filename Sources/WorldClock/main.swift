@@ -1,13 +1,12 @@
 // The host app. macOS only lists a widget whose containing app exists and has been opened,
 // so this app registers the widget, repairs a stale one and explains how to use it. It also
-// lives in the menu bar (no Dock icon) with a panel showing the widget's cities.
+// lives in the menu bar (no Dock icon) with a panel of the same cities, and owns the settings.
 import AppKit
 import ServiceManagement
 import SwiftUI
 import WidgetKit
 import WorldClockCore
 import WorldClockViews
-import WorldClockWidget  // SelectCitiesIntent, to decode the widgets' settings
 
 /// Re-register the embedded extension and restart it, so a grey widget after a reboot,
 /// update or reinstall recovers just by opening the app. Failures are ignored.
@@ -26,14 +25,6 @@ func repairWidget() {
         process.waitUntilExit()
     }
     WidgetCenter.shared.reloadAllTimelines()
-}
-
-/// The typed city list of every World Clock widget on the desktop, and how many widgets there are.
-/// The decode works because SelectCitiesIntent's module is named WorldClockWidget (see its file).
-func widgetCityLists() async -> (lists: [String], widgetCount: Int) {
-    guard #available(macOS 15, *) else { return ([], 0) }
-    let widgets = ((try? await WidgetCenter.shared.currentConfigurations()) ?? []).filter { $0.kind == "WorldClock" }
-    return (widgets.compactMap { $0.widgetConfigurationIntent(of: SelectCitiesIntent.self)?.cities }, widgets.count)
 }
 
 /// The city list is shipped once, inside the widget extension; the app reads that copy.
@@ -56,35 +47,6 @@ enum LoginItem {
         guard !UserDefaults.standard.bool(forKey: key) else { return }
         set(true)
         UserDefaults.standard.set(true, forKey: key)
-    }
-}
-
-final class PanelModel: ObservableObject {
-    @Published var rows: [ClockRow] = []
-    @Published var userZone = TimeZone.current
-    @Published var hasWidget = true
-    @Published var openAtLogin = LoginItem.isOn
-
-    @MainActor func refresh() async {
-        let (lists, widgetCount) = await widgetCityLists()
-        NSTimeZone.resetSystemTimeZone()  // pick up a Mac time zone change
-        userZone = TimeZone.current
-        rows = makeRows(typed: panelCityList(widgetLists: lists), userZone: userZone, directory: directory)
-        hasWidget = widgetCount > 0
-        openAtLogin = LoginItem.isOn
-    }
-}
-
-struct PanelHost: View {
-    @ObservedObject var model: PanelModel
-    let onHowTo: () -> Void
-
-    var body: some View {
-        MenuPanelView(rows: model.rows, userZone: model.userZone, locale: .autoupdatingCurrent,
-                      note: model.hasWidget ? "Edit cities: right-click your widget › Edit" : "Add the World Clock widget to choose cities",
-                      openAtLogin: Binding(get: { model.openAtLogin },
-                                           set: { LoginItem.set($0); model.openAtLogin = LoginItem.isOn }),
-                      onHowTo: onHowTo, onQuit: { NSApp.terminate(nil) })
     }
 }
 
@@ -136,6 +98,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         host.sizingOptions = .preferredContentSize
         popover.contentViewController = host
 
+        // Own time follows the Mac: refresh the panel and the widget as soon as the zone changes.
+        NotificationCenter.default.addObserver(forName: .NSSystemTimeZoneDidChange, object: nil, queue: .main) { [weak self] _ in
+            NSTimeZone.resetSystemTimeZone()
+            self?.model.refresh()
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+
         let howToShownKey = "howToShown"
         if !UserDefaults.standard.bool(forKey: howToShownKey) {
             UserDefaults.standard.set(true, forKey: howToShownKey)
@@ -156,10 +125,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         guard let button = statusItem?.button else { return }
-        Task { @MainActor in
-            await model.refresh()  // the cities may have been edited since last time
-            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-        }
+        model.refresh()
+        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
     }
 
     func showHowTo() {
