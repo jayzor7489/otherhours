@@ -2,26 +2,27 @@ import Foundation
 import Testing
 @testable import WorldClockCore
 
-@Test func youFirstThenTypedOrder() {
-    let rows = makeRows(typed: "London, Denver", userZone: tz("Asia/Manila"), directory: fixture)
+private let london = SavedCity(name: "London", countryCode: "GB", timeZoneID: "Europe/London")
+private let denver = SavedCity(name: "Denver", countryCode: "US", timeZoneID: "America/Denver")
+
+@Test func youFirstThenSavedOrder() {
+    let rows = makeRows(saved: [london, denver], userZone: tz("Asia/Manila"), directory: fixture)
     guard case .you(let name, let flag, _) = rows[0] else { Issue.record("no you row"); return }
     #expect(name == "Manila")
     #expect(flag == "🇵🇭")
     #expect(rows.count == 3)
-    guard case .city(let second, _, _) = rows[1] else { Issue.record("no city row"); return }
+    guard case .city(let second, let secondFlag, _) = rows[1] else { Issue.record("no city row"); return }
     #expect(second == "London")
+    #expect(secondFlag == "🇬🇧")
 }
 
-@Test func dropsDuplicatesAndYourOwnCity() {
-    #expect(makeRows(typed: "Manila, Denver, denver", userZone: tz("Asia/Manila"), directory: fixture).count == 2)
-}
-
-@Test func unknownKeepsItsPlace() {
-    #expect(makeRows(typed: "Atlantis, Denver", userZone: tz("Asia/Manila"), directory: fixture)[1] == .unknown(typed: "Atlantis"))
+@Test func dropsYourOwnCity() {
+    let manila = SavedCity(name: "Manila", countryCode: "PH", timeZoneID: "Asia/Manila")
+    #expect(makeRows(saved: [manila, denver], userZone: tz("Asia/Manila"), directory: fixture).count == 2)
 }
 
 @Test func emptyListIsJustYou() {
-    #expect(makeRows(typed: " , ", userZone: tz("Asia/Manila"), directory: fixture).count == 1)
+    #expect(makeRows(saved: [], userZone: tz("Asia/Manila"), directory: fixture).count == 1)
 }
 
 @Test func layoutMedium() {

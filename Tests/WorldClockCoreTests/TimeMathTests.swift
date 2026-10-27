@@ -46,3 +46,15 @@ private let t = date("2026-10-27T06:10:00Z")
     #expect(gb.time == "17:10")
     #expect(gb.period == nil)
 }
+
+@Test func explicit24HourOverridesLocale() {
+    let p = timeParts(t, in: tz("Asia/Manila"), locale: Locale(identifier: "en_US"), hourCycle: .h24)
+    #expect(p.time == "14:10")
+    #expect(p.period == nil)
+}
+
+@Test func explicit12HourOverridesLocale() {
+    let p = timeParts(t, in: tz("Asia/Manila"), locale: Locale(identifier: "en_GB"), hourCycle: .h12)
+    #expect(p.time == "2:10")
+    #expect(p.period != nil)
+}

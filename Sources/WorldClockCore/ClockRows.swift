@@ -28,6 +28,21 @@ public func makeRows(typed: String, userZone: TimeZone, directory: CityDirectory
     return rows
 }
 
+/// The user's own row first (from the Mac's zone), then the saved cities in order. A saved city
+/// equal to the own row (same zone and name), or whose zone no longer exists, is skipped.
+public func makeRows(saved: [SavedCity], userZone: TimeZone, directory: CityDirectory) -> [ClockRow] {
+    let youName = (userZone.identifier.split(separator: "/").last.map(String.init) ?? userZone.identifier)
+        .replacingOccurrences(of: "_", with: " ")
+    var rows: [ClockRow] = [.you(name: youName, flag: flagEmoji(countryCode: directory.countryCode(forTimeZoneID: userZone.identifier)), zone: userZone)]
+    var seen: Set<String> = [seenKey(youName, userZone)]
+    for city in saved {
+        guard let zone = TimeZone(identifier: city.timeZoneID),
+              seen.insert(seenKey(city.name, zone)).inserted else { continue }
+        rows.append(.city(name: city.name, flag: flagEmoji(countryCode: city.countryCode), zone: zone))
+    }
+    return rows
+}
+
 private func seenKey(_ name: String, _ zone: TimeZone) -> String {
     "\(zone.identifier)|\(CityDirectory.normalize(name))"
 }

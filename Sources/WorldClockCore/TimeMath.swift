@@ -34,10 +34,14 @@ public func offsetLabel(at date: Date, cityZone: TimeZone, userZone: TimeZone) -
     return rest == 0 ? "\(sign)\(hours) hrs" : "\(sign)\(hours):\(String(format: "%02d", rest)) hrs"
 }
 
-/// "12:10" + "AM" on a 12-hour Mac, "17:10" + nil on a 24-hour one.
-public func timeParts(_ date: Date, in zone: TimeZone, locale: Locale) -> (time: String, period: String?) {
-    let skeleton = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: locale) ?? "h a"
-    let twelveHour = skeleton.contains("a")
+/// "12:10" + "AM" on a 12-hour Mac, "17:10" + nil on a 24-hour one. `hourCycle` overrides the Mac.
+public func timeParts(_ date: Date, in zone: TimeZone, locale: Locale, hourCycle: HourCycle = .system) -> (time: String, period: String?) {
+    let twelveHour: Bool
+    switch hourCycle {
+    case .h12: twelveHour = true
+    case .h24: twelveHour = false
+    case .system: twelveHour = (DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: locale) ?? "h a").contains("a")
+    }
     let formatter = DateFormatter()
     formatter.locale = locale
     formatter.timeZone = zone
