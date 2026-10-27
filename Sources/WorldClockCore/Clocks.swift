@@ -22,15 +22,18 @@ public struct ClockGroup: Equatable {
     public let population: Int
 }
 
-/// Groups the records' zones into clocks, largest first.
-public func clockGroups(for records: [CityRecord], from date: Date) -> [ClockGroup] {
+/// Groups the records' zones into clocks, largest first. `key` lets a caller reuse computed keys.
+public func clockGroups(for records: [CityRecord], from date: Date,
+                        key: (TimeZone) -> String = { _ in "" }) -> [ClockGroup] {
     var biggest: [String: Int] = [:]  // zone → its most populous city
     for record in records where TimeZone(identifier: record.timeZoneID) != nil {
         biggest[record.timeZoneID] = max(biggest[record.timeZoneID] ?? 0, record.population)
     }
     var byKey: [String: [String]] = [:]
     for id in biggest.keys {
-        byKey[clockKey(for: TimeZone(identifier: id)!, from: date), default: []].append(id)
+        let zone = TimeZone(identifier: id)!
+        let cached = key(zone)
+        byKey[cached.isEmpty ? clockKey(for: zone, from: date) : cached, default: []].append(id)
     }
     return byKey.values.map { ids in
         let representative = ids.max { (biggest[$0]!, $1) < (biggest[$1]!, $0) }!  // ties: alphabetical
