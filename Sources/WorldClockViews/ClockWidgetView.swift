@@ -24,7 +24,7 @@ public struct ClockWidgetView: View {
         let plan = layout(rowCount: rows.count, size: size)
         VStack(spacing: plan.style == .full ? 6 : 4) {
             ForEach(Array(rows.prefix(plan.visibleCount).enumerated()), id: \.offset) { _, row in
-                rowView(row, style: plan.style)
+                AnyClockRow(row: row, date: date, userZone: userZone, style: plan.style, monochrome: monochrome, locale: locale)
             }
             if plan.overflowCount > 0 {
                 NoteRow(text: "+\(plan.overflowCount) more", monochrome: monochrome)
@@ -35,18 +35,5 @@ public struct ClockWidgetView: View {
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    @ViewBuilder private func rowView(_ row: ClockRow, style: RowStyle) -> some View {
-        switch row {
-        case .you(let name, let flag, let zone):
-            PlaceRow(name: name, flag: flag, zone: zone, isYou: true, date: date, userZone: userZone,
-                     style: style, monochrome: monochrome, locale: locale)
-        case .city(let name, let flag, let zone):
-            PlaceRow(name: name, flag: flag, zone: zone, isYou: false, date: date, userZone: userZone,
-                     style: style, monochrome: monochrome, locale: locale)
-        case .unknown(let typed):
-            UnknownRow(typed: typed, style: style, monochrome: monochrome)
-        }
     }
 }

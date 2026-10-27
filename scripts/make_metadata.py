@@ -10,7 +10,7 @@ import sys
 
 MODULE = "WorldClockWidget"
 TOOLS_VERSION = "27A200c"  # match the system's own generator
-# Must match @Parameter(default:) in Sources/WorldClockWidget/WorldClockWidget.swift.
+# Must match @Parameter(default:) in Sources/WorldClockWidget/SelectCitiesIntent.swift and defaultCityList.
 DEFAULT_CITIES = "Denver, London, Sydney"
 
 

@@ -50,6 +50,25 @@ let scenarios: [(name: String, size: WidgetSize, cities: String, monochrome: Boo
     print("wrote \(s.name).png")
 }
 
+/// The menu bar panel, on a plain desktop-coloured backdrop.
+@MainActor func renderPanel(name: String, cities: String, note: String) throws {
+    let rows = makeRows(typed: cities, userZone: userZone, directory: directory)
+    let view = MenuPanelView(rows: rows, userZone: userZone, locale: locale, note: note, openAtLogin: .constant(true),
+                             onHowTo: {}, onQuit: {}, fixedDate: date)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(16)
+        .background(Color(red: 0.11, green: 0.31, blue: 0.61))
+    let renderer = ImageRenderer(content: view)
+    renderer.scale = 2
+    guard let cg = renderer.cgImage else { throw CocoaError(.fileWriteUnknown) }
+    try NSBitmapImageRep(cgImage: cg).representation(using: .png, properties: [:])!
+        .write(to: outDir.appendingPathComponent("\(name).png"))
+    print("wrote \(name).png")
+}
+
 MainActor.assumeIsolated {
     for s in scenarios { try! render(s) }
+    try! renderPanel(name: "panel-usual", cities: "Denver, London, Cairns", note: "Edit cities: right-click your widget › Edit")
+    try! renderPanel(name: "panel-long", cities: "Denver, London, Sydney, Tokyo, Dubai, New York, Kathmandu, Paris, Auckland, Honolulu",
+                     note: "Edit cities: right-click your widget › Edit")
 }

@@ -21,14 +21,14 @@ fail() { echo "    FAIL: $*" >&2; exit 1; }
 
 echo "==> swift build (release)"
 swift build -c release --product WorldClock
-swift build -c release --product WorldClockWidget
+swift build -c release --product WorldClockExtension
 BIN="$(swift build -c release --show-bin-path)"
 
 echo "==> Assemble $APP"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APPEX/Contents/MacOS" "$APPEX/Contents/Resources"
 cp "$BIN/WorldClock" "$APP/Contents/MacOS/WorldClock"
-cp "$BIN/WorldClockWidget" "$EXT_BIN"
+cp "$BIN/WorldClockExtension" "$EXT_BIN"
 cp Resources/App-Info.plist "$APP/Contents/Info.plist"
 cp Resources/Widget-Info.plist "$APPEX/Contents/Info.plist"
 plutil -replace CFBundleVersion -string "$VERSION" "$APP/Contents/Info.plist"
@@ -39,8 +39,10 @@ python3 -I scripts/make_metadata.py "$APPEX/Contents/Resources"
 echo "==> Checks"
 nm -u "$EXT_BIN" | grep "_NSExtensionMain" >/dev/null || fail "extension does not start in _NSExtensionMain"
 echo "    ok: entry point _NSExtensionMain"
-nm "$EXT_BIN" | grep "16WorldClockWidget18SelectCitiesIntentV" >/dev/null || fail "SelectCitiesIntent mangled name not in binary"
-echo "    ok: intent type name matches metadata"
+for binary in "$EXT_BIN" "$APP/Contents/MacOS/WorldClock"; do   # the app decodes it for the menu bar
+    nm "$binary" | grep "16WorldClockWidget18SelectCitiesIntentV" >/dev/null || fail "SelectCitiesIntent mangled name not in $binary"
+done
+echo "    ok: intent type name matches metadata, in the widget and the app"
 python3 -I -c "import json,sys; json.load(open(sys.argv[1]))" "$APPEX/Contents/Resources/Metadata.appintents/extract.actionsdata" \
     || fail "metadata JSON does not parse"
 echo "    ok: metadata JSON"
@@ -57,6 +59,7 @@ echo "    ok: signed, sandbox kept"
 
 echo "==> Install to $INSTALL_DIR"
 killall WorldClockWidget 2>/dev/null || true   # a running extension keeps the old code loaded
+killall WorldClock 2>/dev/null || true         # so does the menu bar app, which stays running
 mkdir -p "$INSTALL_DIR"
 INSTALLED="$INSTALL_DIR/World Clock.app"
 rm -rf "$INSTALLED"

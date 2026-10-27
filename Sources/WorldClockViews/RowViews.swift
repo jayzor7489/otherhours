@@ -131,6 +131,29 @@ struct PlaceRow: View {
     }
 }
 
+/// Any ClockRow, drawn the same way in the widget and the menu bar panel.
+struct AnyClockRow: View {
+    let row: ClockRow
+    let date: Date
+    let userZone: TimeZone
+    let style: RowStyle
+    let monochrome: Bool
+    let locale: Locale
+
+    var body: some View {
+        switch row {
+        case .you(let name, let flag, let zone):
+            PlaceRow(name: name, flag: flag, zone: zone, isYou: true, date: date, userZone: userZone,
+                     style: style, monochrome: monochrome, locale: locale)
+        case .city(let name, let flag, let zone):
+            PlaceRow(name: name, flag: flag, zone: zone, isYou: false, date: date, userZone: userZone,
+                     style: style, monochrome: monochrome, locale: locale)
+        case .unknown(let typed):
+            UnknownRow(typed: typed, style: style, monochrome: monochrome)
+        }
+    }
+}
+
 struct UnknownRow: View {
     let typed: String
     let style: RowStyle

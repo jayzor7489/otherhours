@@ -5,16 +5,7 @@ import SwiftUI
 import WidgetKit
 import WorldClockCore
 import WorldClockViews
-
-/// The only setting: a typed list. A String is the one parameter type that decodes without
-/// Xcode's metadata processor (dropdowns arrive as nil). Keep in sync with scripts/make_metadata.py.
-struct SelectCitiesIntent: WidgetConfigurationIntent {
-    static let title: LocalizedStringResource = "Choose Cities"
-    static let description = IntentDescription("Type cities separated by commas.")
-
-    @Parameter(title: "Cities", default: "Denver, London, Sydney")
-    var cities: String
-}
+import WorldClockWidget  // SelectCitiesIntent
 
 struct ClockEntry: TimelineEntry {
     let date: Date
@@ -32,7 +23,7 @@ struct ClockProvider: AppIntentTimelineProvider {
     }()
 
     func placeholder(in context: Context) -> ClockEntry {
-        entry(at: Date(), typed: "Denver, London, Sydney")
+        entry(at: Date(), typed: defaultCityList)
     }
 
     func snapshot(for configuration: SelectCitiesIntent, in context: Context) async -> ClockEntry {

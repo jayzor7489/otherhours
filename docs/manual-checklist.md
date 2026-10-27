@@ -40,3 +40,15 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 
 - ⏳ **After a reboot.** The widget comes back on its own, not grey.
 - ⏳ **Repair.** If it is ever grey, opening World Clock fixes it within a few seconds.
+
+## Menu bar (added 2026-10-27)
+
+- ✅ **Widgets kept their cities** after the module rename (both read back "Denver, London, Cairns").
+- ✅ **Login item registered** (enabled, allowed).
+- ⏳ **Globe and panel.** A globe sits in the menu bar; clicking it shows Manila plus Denver, London, Cairns with the widget's colours; clicking again or elsewhere closes it.
+- ⏳ **Follows the widget.** Edit a widget's cities, reopen the panel: the new list shows.
+- ⏳ **Two widgets.** Give the large one an extra city: the panel shows it, and shared cities appear once.
+- ⏳ **Long list.** 10+ cities: the panel scrolls after 8 rows (the preview renderer can't draw this).
+- ⏳ **Gear menu.** Open at Login tick matches System Settings; How to Use opens the window; Quit removes the globe.
+- ⏳ **Ticks.** Leave the panel open across a minute change: times advance.
+- ⏳ **No Dock icon**, and the app comes back after a reboot.
