@@ -39,16 +39,11 @@ struct ClockProvider: AppIntentTimelineProvider {
         entry(at: Date(), typed: configuration.cities)
     }
 
-    /// One entry per minute for an hour, starting at the current minute; a timeline that
-    /// starts in the future draws an empty placeholder.
+    /// One entry per minute for an hour, starting at the current minute (see minuteTimeline).
     func timeline(for configuration: SelectCitiesIntent, in context: Context) async -> Timeline<ClockEntry> {
-        let now = Date()
-        let start = Calendar.current.date(bySetting: .second, value: 0, of: now) ?? now
-        let template = entry(at: start, typed: configuration.cities)
-        let entries = (0..<60).compactMap { minute in
-            Calendar.current.date(byAdding: .minute, value: minute, to: start)
-                .map { ClockEntry(date: $0, rows: template.rows, userZone: template.userZone) }
-        }
+        let dates = minuteTimeline(from: Date(), count: 60)
+        let template = entry(at: dates[0], typed: configuration.cities)
+        let entries = dates.map { ClockEntry(date: $0, rows: template.rows, userZone: template.userZone) }
         return Timeline(entries: entries, policy: .atEnd)
     }
 
