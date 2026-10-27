@@ -3,6 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key><string>WorldClock</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>CFBundleIdentifier</key><string>com.jasonaldemita.worldclock</string>
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>World Clock</string>

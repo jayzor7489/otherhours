@@ -26,10 +26,11 @@ BIN="$(swift build -c release --show-bin-path)"
 
 echo "==> Assemble $APP"
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APPEX/Contents/MacOS" "$APPEX/Contents/Resources"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APPEX/Contents/MacOS" "$APPEX/Contents/Resources"
 cp "$BIN/WorldClock" "$APP/Contents/MacOS/WorldClock"
 cp "$BIN/WorldClockExtension" "$EXT_BIN"
 cp Resources/App-Info.plist "$APP/Contents/Info.plist"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"   # drawn by scripts/make_icon.swift
 cp Resources/Widget-Info.plist "$APPEX/Contents/Info.plist"
 plutil -replace CFBundleVersion -string "$VERSION" "$APP/Contents/Info.plist"
 plutil -replace CFBundleVersion -string "$VERSION" "$APPEX/Contents/Info.plist"
