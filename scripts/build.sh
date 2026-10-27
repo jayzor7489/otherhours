@@ -33,7 +33,7 @@ cp Resources/App-Info.plist "$APP/Contents/Info.plist"
 cp Resources/Widget-Info.plist "$APPEX/Contents/Info.plist"
 plutil -replace CFBundleVersion -string "$VERSION" "$APP/Contents/Info.plist"
 plutil -replace CFBundleVersion -string "$VERSION" "$APPEX/Contents/Info.plist"
-cp Resources/cities.tsv "$APPEX/Contents/Resources/cities.tsv"
+cp Resources/cities.tsv Resources/regions.tsv Resources/abbreviations.tsv "$APPEX/Contents/Resources/"   # the app reads these copies too
 
 echo "==> Checks"
 nm -u "$EXT_BIN" | grep "_NSExtensionMain" >/dev/null || fail "extension does not start in _NSExtensionMain"

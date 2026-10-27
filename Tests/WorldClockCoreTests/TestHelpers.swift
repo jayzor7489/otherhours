@@ -13,6 +13,8 @@ let fixture = CityDirectory(records: [
     CityRecord(name: "Manila", asciiName: "Manila", countryCode: "PH", timeZoneID: "Asia/Manila", population: 1_600_000),
     CityRecord(name: "London", asciiName: "London", countryCode: "GB", timeZoneID: "Europe/London", population: 8_900_000),
     CityRecord(name: "Denver", asciiName: "Denver", countryCode: "US", timeZoneID: "America/Denver", population: 730_000),
+    CityRecord(name: "Colorado Springs", asciiName: "Colorado Springs", countryCode: "US", timeZoneID: "America/Denver", population: 200_000, admin1: "CO"),
+    CityRecord(name: "Phoenix", asciiName: "Phoenix", countryCode: "US", timeZoneID: "America/Phoenix", population: 1_600_000, admin1: "AZ"),
 ])
 
 /// The bundled GeoNames list, for tests that need real data.
@@ -21,3 +23,6 @@ let realDirectory: CityDirectory = try! CityDirectory.load(contentsOf: resourceU
 func resourceURL(_ name: String) -> URL {
     URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("../../Resources/\(name)").standardized
 }
+
+let bundledRegions: [RegionRecord] = try! loadRegions(contentsOf: resourceURL("regions.tsv"))
+let bundledAbbreviations: [AbbreviationRecord] = try! loadAbbreviations(contentsOf: resourceURL("abbreviations.tsv"))
