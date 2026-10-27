@@ -92,10 +92,12 @@ private func search(_ text: String) -> [PlaceSuggestion] { engine.search(text, a
     #expect(pick.saved == SavedCity(name: "Denver", countryCode: "US", timeZoneID: "America/Denver"))
 }
 
+/// Typing must feel instant: under 50 ms a search. Best of 5 runs, because the suite runs tests
+/// in parallel and a single timing measures the machine's load, not the search.
 @Test func searchIsFast() {
     let clock = ContinuousClock()
-    let elapsed = clock.measure {
-        for _ in 0..<7 { for text in ["s", "Colorado", "syd"] { _ = search(text) } }
+    for text in ["s", "Colorado", "syd", "united states"] {
+        let best = (0..<5).map { _ in clock.measure { _ = search(text) } }.min()!
+        #expect(best < .milliseconds(50), "\(text): \(best)")
     }
-    #expect(elapsed < .milliseconds(1000), "\(elapsed)")
 }

@@ -39,6 +39,7 @@ public final class PlaceSearch {
     private let labeller: ZoneLabeller
     private let displayLocale: Locale
     private let cityKeys: [(keys: [String], words: [String])]  // per record, parallel to directory.records
+    private let cityOrder: [Int]  // record indexes, most populous first
     private let regions: [(keys: [String], region: RegionRecord, records: [CityRecord])]
     private let countries: [(keys: [String], code: String, records: [CityRecord])]
     private let abbreviations: [String: [String]]  // "PST" → zone ids
@@ -56,6 +57,8 @@ public final class PlaceSearch {
             let keys = Array(Set([record.name, record.asciiName].flatMap(CityDirectory.keys(for:))))
             return (keys, Array(Set(keys.flatMap(Self.words))))
         }
+
+        cityOrder = directory.records.indices.sorted { directory.records[$0].population > directory.records[$1].population }
 
         var byRegion: [String: [CityRecord]] = [:]
         var byCountry: [String: [CityRecord]] = [:]
@@ -118,8 +121,15 @@ public final class PlaceSearch {
             return nil
         }
 
-        for (index, entry) in cityKeys.enumerated() {
+        // Most populous first, so only the first `limit` partial matches can rank; exact ones all can.
+        var partialCities = 0
+        for index in cityOrder {
+            let entry = cityKeys[index]
             guard let exact = match(entry.keys, entry.words) else { continue }
+            if !exact {
+                guard partialCities < limit else { continue }
+                partialCities += 1
+            }
             let record = directory.records[index]
             let kind: Kind = exact && record.population < Self.majorCityPopulation ? .smallExactCity : .city
             candidates.append(Candidate(id: "\(record.timeZoneID)|\(record.name)", make: { self.citySuggestion(record, at: date) },
