@@ -16,6 +16,8 @@ EXT_BIN="$APPEX/Contents/MacOS/WorldClockWidget"
 LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 
 fail() { echo "    FAIL: $*" >&2; exit 1; }
+# Checks pipe into plain `grep >/dev/null`, never `grep -q`: with pipefail, -q exits at the
+# first match, the writer dies of SIGPIPE (141) and a present symbol reads as missing.
 
 echo "==> swift build (release)"
 swift build -c release --product WorldClock
@@ -35,9 +37,9 @@ cp Resources/cities.tsv "$APPEX/Contents/Resources/cities.tsv"
 python3 -I scripts/make_metadata.py "$APPEX/Contents/Resources"
 
 echo "==> Checks"
-nm -u "$EXT_BIN" | grep -q "_NSExtensionMain" || fail "extension does not start in _NSExtensionMain"
+nm -u "$EXT_BIN" | grep "_NSExtensionMain" >/dev/null || fail "extension does not start in _NSExtensionMain"
 echo "    ok: entry point _NSExtensionMain"
-nm "$EXT_BIN" | grep -q "16WorldClockWidget18SelectCitiesIntentV" || fail "SelectCitiesIntent mangled name not in binary"
+nm "$EXT_BIN" | grep "16WorldClockWidget18SelectCitiesIntentV" >/dev/null || fail "SelectCitiesIntent mangled name not in binary"
 echo "    ok: intent type name matches metadata"
 python3 -I -c "import json,sys; json.load(open(sys.argv[1]))" "$APPEX/Contents/Resources/Metadata.appintents/extract.actionsdata" \
     || fail "metadata JSON does not parse"
@@ -48,7 +50,7 @@ echo "==> Sign (ad-hoc): extension first with its sandbox, then the app"
 codesign --force --sign - --timestamp=none --entitlements Resources/Widget.entitlements "$APPEX"
 codesign --force --sign - --timestamp=none "$APP"
 codesign --verify --deep --strict "$APP" || fail "signature does not verify"
-codesign -d --entitlements - "$APPEX" 2>/dev/null | grep -q app-sandbox || fail "extension lost its sandbox entitlement"
+codesign -d --entitlements - "$APPEX" 2>/dev/null | grep app-sandbox >/dev/null || fail "extension lost its sandbox entitlement"
 echo "    ok: signed, sandbox kept"
 
 [ "${1:-}" = "--no-install" ] && { echo "==> Built $APP (not installed)"; exit 0; }
