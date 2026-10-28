@@ -4,7 +4,13 @@
 
 Apple's World Clock widget stops at four cities and shows clock faces only. I wanted any number of cities, at a glance, on one widget.
 
-![Day & Night theme, medium widget](docs/previews/medium-usual.png)
+<p align="center">
+  <img src="docs/screenshots/menu-bar-panel.png" alt="The menu bar panel: Manila, Denver, Sydney, Madrid, Chicago and Costa Rica, each row coloured by its sky" width="340">
+  &nbsp;
+  <img src="docs/screenshots/settings.png" alt="Settings: cities, four themes, time format and Open at Login" width="300">
+</p>
+
+![The medium and large widgets in the macOS widget gallery](docs/screenshots/widget-gallery.png)
 
 ## What it does
 
