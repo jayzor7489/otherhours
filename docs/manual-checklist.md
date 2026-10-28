@@ -25,7 +25,7 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 ## Appearance
 
 - ✅ **Light and dark desktop.** Text readable on both. (Jason, 2026-10-28)
-- ⏳ **Monochrome.** System Settings > Desktop & Dock > Widgets > Dim widgets on desktop: **Always** (this Mac has no "Widget style" menu): bars differ by brightness, sun/moon become symbols, day vs night still readable.
+- ✅ **Monochrome.** (Jason, 2026-10-28) System Settings > Desktop & Dock > Widgets > Dim widgets on desktop: **Always** (this Mac has no "Widget style" menu): bars differ by brightness, sun/moon become symbols, day vs night still readable.
 - ✅ **Tinted / clear style.** Same check with the tinted style. (Jason, 2026-10-28)
 - ⏳ **Sharp times.** Times look crisp, not glowing or blurred, once a minute has passed (a soft blur during the minute change is the system's animation).
 
