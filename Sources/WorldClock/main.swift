@@ -57,7 +57,7 @@ struct HowToView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("World Clock").font(.title2.bold())
             step(1, "Right-click the desktop, choose **Edit Widgets**, search for **World Clock** and add the medium or large size.")
-            step(2, "Click the day/night clock in the menu bar, then **Settings…**. Add cities by searching for a city, state, country or time zone: \"Colorado\" finds Mountain Time.")
+            step(2, "Click the globe clock in the menu bar, then **Settings…**. Add cities by searching for a city, state, country or time zone: \"Colorado\" finds Mountain Time.")
             step(3, "Pick a theme in Settings. The widget and the menu bar panel both follow it.")
             step(4, "If the widget ever turns grey, open this app again. It has just repaired the widget.")
             Divider()
@@ -101,7 +101,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         LoginItem.setUpOnce()
 
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        item.button?.image = menuBarIcon()   // the app icon in one colour, see MenuBarIcon.swift
+        item.button?.image = menuBarIcon()   // a globe with clock hands, see MenuBarIcon.swift
         item.button?.target = self
         item.button?.action = #selector(togglePanel)
         statusItem = item
