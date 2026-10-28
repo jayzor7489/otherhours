@@ -7,8 +7,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-export SDKROOT="${SDKROOT:-/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk}"   # macOS 27 SDK needs Xcode for SwiftUI macros
-INSTALL_DIR="~/Applications"   # absolute: $HOME differs in Claude's sandboxed sessions
+# The macOS 27 SDK needs Xcode for SwiftUI macros, so prefer 26.5 when it is installed;
+# otherwise use whatever SDK the Command Line Tools provide.
+PINNED_SDK=/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk
+[ -z "${SDKROOT:-}" ] && [ -d "$PINNED_SDK" ] && export SDKROOT="$PINNED_SDK"
+# The real home folder from the user database, not $HOME, which some sandboxed shells change.
+INSTALL_DIR="${INSTALL_DIR:-$(dscl . -read "/Users/$(id -un)" NFSHomeDirectory | awk '{print $2}')/Applications}"
+ARCHS=(--arch arm64 --arch x86_64)   # universal: Apple silicon and Intel
 VERSION="$(date +%Y%m%d%H%M)"   # bump every build, or chronod keeps the old extension
 APP="build/Otherhours.app"
 APPEX="$APP/Contents/PlugIns/OtherhoursWidget.appex"
@@ -20,9 +25,9 @@ fail() { echo "    FAIL: $*" >&2; exit 1; }
 # first match, the writer dies of SIGPIPE (141) and a present symbol reads as missing.
 
 echo "==> swift build (release)"
-swift build -c release --product WorldClock
-swift build -c release --product WorldClockExtension
-BIN="$(swift build -c release --show-bin-path)"
+swift build -c release "${ARCHS[@]}" --product WorldClock
+swift build -c release "${ARCHS[@]}" --product WorldClockExtension
+BIN="$(swift build -c release "${ARCHS[@]}" --show-bin-path)"
 
 echo "==> Assemble $APP"
 rm -rf "$APP"
@@ -39,6 +44,10 @@ cp Resources/cities.tsv Resources/regions.tsv Resources/abbreviations.tsv "$APPE
 echo "==> Checks"
 nm -u "$EXT_BIN" | grep "_NSExtensionMain" >/dev/null || fail "extension does not start in _NSExtensionMain"
 echo "    ok: entry point _NSExtensionMain"
+for bin in "$APP/Contents/MacOS/Otherhours" "$EXT_BIN"; do
+    [ "$(lipo -archs "$bin")" = "x86_64 arm64" ] || fail "$bin is not universal"
+done
+echo "    ok: universal (arm64 + x86_64)"
 plutil -lint "$APP/Contents/Info.plist" "$APPEX/Contents/Info.plist" >/dev/null || fail "Info.plist invalid"
 
 echo "==> Sign (ad-hoc): extension first with its sandbox, then the app"

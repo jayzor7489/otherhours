@@ -1,8 +1,8 @@
 # Otherhours
 
-The hours over there. A macOS desktop widget and menu bar app that shows your own time plus as many cities as you want. Apple's World Clock widget stops at four cities and shows clock faces only; this one takes any number, puts each city's flag next to it, and colours each row by that city's sky right now (night, dawn, day, dusk), so you can see at a glance who is asleep.
+**The hours over there.** A free, open-source macOS desktop widget and menu bar app that shows your own time plus as many cities as you want. Each city gets its flag and a row coloured by its sky right now (night, dawn, day, dusk), so you can see at a glance who is asleep.
 
-Built for my own Mac, with the Xcode Command Line Tools only (no Xcode).
+Apple's World Clock widget stops at four cities and shows clock faces only. I wanted any number of cities, at a glance, on one widget.
 
 ![Day & Night theme, medium widget](docs/previews/medium-usual.png)
 
@@ -36,25 +36,49 @@ Design and evidence: `docs/specs/2026-10-27-world-clock-design.md` (the widget) 
 
 ## Install
 
+**Requirements:** macOS 14 or later, Apple silicon or Intel (universal). Built and tested on macOS 27; earlier versions are untested.
+
+1. Download `Otherhours-x.y.z.zip` from [Releases](../../releases) and unzip it.
+2. Drag **Otherhours.app** into **Applications**.
+3. Open it. macOS says it "could not verify" the app, because it is not notarized (notarizing needs a paid Apple Developer account). Click **Done**, then open **System Settings › Privacy & Security**, scroll down and click **Open Anyway** next to Otherhours.
+   - Or, in Terminal: `xattr -dr com.apple.quarantine /Applications/Otherhours.app`
+4. A globe with clock hands appears in the menu bar. Click it, then **Settings…**, and add cities.
+5. Right-click the desktop › **Edit Widgets**, search **Otherhours**, and add the medium or large size.
+
+The app starts at login (switch it off in the menu bar's gear menu or in System Settings › General › Login Items). It has no Dock icon. **If the widget ever turns grey,** open Otherhours again: each launch re-registers and reloads the widget.
+
+### Build from source
+
+Needs only the Xcode Command Line Tools (`xcode-select --install`), no Xcode.
+
 ```sh
-scripts/build.sh
+scripts/build.sh          # build, sign ad-hoc, install to ~/Applications, open
+scripts/package.sh        # build the release zip in build/
 ```
 
-Builds `Otherhours.app` with its widget extension, checks the entry point and entitlements, signs ad-hoc, installs to `~/Applications` (change `INSTALL_DIR` for another Mac), registers the widget and opens the app. Then right-click the desktop > **Edit Widgets**, search **Otherhours**, and add the medium or large size.
-
-The app starts at login (turned on at first launch; switch it off in the gear menu or System Settings > General > Login Items). It has no Dock icon.
-
-**If the widget turns grey,** open **Otherhours** from Applications again. Each launch or reopen re-registers the widget, restarts it and reloads it.
+`build.sh` builds a universal app, checks the extension's entry point and entitlements, signs ad-hoc, installs to your `~/Applications` (set `INSTALL_DIR` to change it), registers the widget and opens the app.
 
 ## Develop
 
-- Tests: `scripts/test.sh` (Swift Testing, WorldClockCore).
+- Tests: `scripts/test.sh` (Swift Testing, WorldClockCore). The macOS 26.5 SDK is pinned in the scripts because the newer SDK needs full Xcode for SwiftUI macros; change `SDKROOT` if yours differs.
 - Previews: `swift run -c release WorldClockPreview Resources/cities.tsv docs/previews`.
 - Data: `python3 -I scripts/make_cities.py` regenerates `Resources/cities.tsv` and `Resources/regions.tsv` from GeoNames. `Resources/abbreviations.tsv` is hand-made.
 - Logs: `/usr/bin/log show --last 5m --info --predicate 'subsystem == "com.jasonaldemita.otherhours"'` (each widget timeline logs its city count). Use the full path: zsh has its own `log` command.
 - Manual checks: `docs/manual-checklist.md`.
 - Naming: the app was called World Clock until 2026-10-28. The Swift targets and the repo folder keep that name; the app, widget, bundle IDs and preferences are Otherhours, and the first launch copies settings from the old `com.jasonaldemita.worldclock` preferences.
 
+## How it was made
+
+I designed Otherhours and tested it on my own Mac; the code was written with [Claude Code](https://claude.com/claude-code). The design notes and build plans are in `docs/`.
+
+## Support
+
+Otherhours is free. If it's useful to you, you can [buy me a coffee](https://ko-fi.com/KOFI_HANDLE). Bug reports and ideas are welcome in [Issues](../../issues).
+
 ## Credits
 
 City, region and country data from GeoNames (geonames.org), CC BY 4.0.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
