@@ -41,7 +41,7 @@ public struct ClockWidgetView: View {
         }
     }
 
-    static let emptyNote = "Add cities from the menu bar 🌐"
+    static let emptyNote = "Add cities from the clock in the menu bar"
 
     /// Mockup B: rows as bars coloured by each city's sky.
     @ViewBuilder private var dayNight: some View {

@@ -38,6 +38,7 @@ struct SettingsView: View {
     @State private var query = ""
     @State private var userZone = TimeZone.current
     @State private var openAtLogin = LoginItem.isOn
+    @State private var dropTarget: Int?
     @FocusState private var searchFocused: Bool
     @Environment(\.colorScheme) private var colorScheme
 
@@ -47,10 +48,20 @@ struct SettingsView: View {
         Form {
             Section("Cities") {
                 ownRow
+                // .onMove only drags inside a List, and this is a Form, so rows drag and drop themselves.
                 ForEach(Array(store.settings.cities.enumerated()), id: \.element) { index, city in
                     cityRow(city, index: index)
+                        .background(RoundedRectangle(cornerRadius: 6).fill(dropTarget == index ? Color.accentColor.opacity(0.18) : .clear))
+                        .draggable(Self.dragPrefix + String(index)) { cityRow(city, index: index).frame(width: 360).padding(6) }
+                        .dropDestination(for: String.self) { items, _ in
+                            dropTarget = nil
+                            guard let from = items.first.flatMap(Self.draggedIndex) else { return false }
+                            store.moveCity(at: from, onto: index)
+                            return true
+                        } isTargeted: { over in
+                            if over { dropTarget = index } else if dropTarget == index { dropTarget = nil }
+                        }
                 }
-                .onMove { store.move(from: $0, to: $1) }
                 if adding { addSlot } else {
                     Button { startAdding() } label: { Label("Add city", systemImage: "plus") }
                         .buttonStyle(.borderless)
@@ -93,6 +104,13 @@ struct SettingsView: View {
             Spacer()
             Image(systemName: "lock.fill").foregroundStyle(.tertiary).help("Always shown first; follows your Mac")
         }
+    }
+
+    /// A dragged row carries its index, prefixed so text dropped from elsewhere is ignored.
+    private static let dragPrefix = "worldclock-city:"
+
+    private static func draggedIndex(_ payload: String) -> Int? {
+        payload.hasPrefix(dragPrefix) ? Int(payload.dropFirst(dragPrefix.count)) : nil
     }
 
     private func cityRow(_ city: SavedCity, index: Int) -> some View {

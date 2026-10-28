@@ -8,7 +8,7 @@ Built for my own Mac, with the Xcode Command Line Tools only (no Xcode).
 
 ## What it does
 
-- **Any number of cities**, set in one place: click the 🌐 in the menu bar, then **Settings…**.
+- **Any number of cities**, set in one place: click the day/night clock in the menu bar, then **Settings…**.
 - **Search that knows what you mean.** Type a city ("syd" offers Sydney, Australia and Sydney, Canada), a state ("Colorado" gives Denver, Mountain Time), a country ("Japan" gives Tokyo; "United States" gives its 7 clocks), an abbreviation ("PST", "AEST", "IST") or a zone name ("Mountain Time"). Each suggestion shows its local time, so you can tell you picked the right clock. Arizona correctly gives Phoenix, which skips daylight saving.
 - **Your own time comes first**, from the Mac's clock. Install it in New York and it shows New York; travel, and it follows the Mac within seconds.
 - **Four themes**, for the widget and the panel alike:

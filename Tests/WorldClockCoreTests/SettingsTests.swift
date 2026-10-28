@@ -75,3 +75,16 @@ private let tokyo = SavedCity(name: "Tokyo", countryCode: "JP", timeZoneID: "Asi
     #expect(name == "Troll")
     #expect(flag == "🌐")
 }
+
+@Test func dropOntoARowTakesThatRowsPlace() {
+    let d = freshDefaults()
+    let store = SettingsStore(defaults: d, onChange: {})
+    let sydney = SavedCity(name: "Sydney", countryCode: "AU", timeZoneID: "Australia/Sydney")
+    [denver, london, tokyo, sydney].forEach(store.add)
+    store.moveCity(at: 0, onto: 2)   // dragged down: lands after the row it was dropped on
+    #expect(store.settings.cities == [london, tokyo, denver, sydney])
+    store.moveCity(at: 3, onto: 0)   // dragged up: lands before it
+    #expect(store.settings.cities == [sydney, london, tokyo, denver])
+    store.moveCity(at: 1, onto: 1)   // onto itself: nothing changes
+    #expect(ClockSettings.load(from: d).cities == [sydney, london, tokyo, denver])
+}

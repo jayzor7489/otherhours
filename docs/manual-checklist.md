@@ -24,9 +24,9 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 
 ## Appearance
 
-- ⏳ **Light and dark desktop.** Text readable on both.
-- ⏳ **Monochrome.** System Settings > Desktop & Dock > Widget style "Automatic", then bring a window in front of the desktop: bars differ by brightness, sun/moon become symbols, day vs night still readable.
-- ⏳ **Tinted / clear style.** Same check with the tinted style.
+- ✅ **Light and dark desktop.** Text readable on both. (Jason, 2026-10-28)
+- ⏳ **Monochrome.** System Settings > Desktop & Dock > Widgets > Dim widgets on desktop: **Always** (this Mac has no "Widget style" menu): bars differ by brightness, sun/moon become symbols, day vs night still readable.
+- ✅ **Tinted / clear style.** Same check with the tinted style. (Jason, 2026-10-28)
 - ⏳ **Sharp times.** Times look crisp, not glowing or blurred, once a minute has passed (a soft blur during the minute change is the system's animation).
 
 ## Time
@@ -45,24 +45,24 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 
 - ✅ **Widgets kept their cities** after the module rename (both read back "Denver, London, Cairns").
 - ✅ **Login item registered** (enabled, allowed).
-- ⏳ **Globe and panel.** A globe sits in the menu bar; clicking it shows Manila plus Denver, London, Cairns with the widget's colours; clicking again or elsewhere closes it.
+- ⏳ **Menu bar icon and panel.** The day/night clock (was a globe until 2026-10-28) sits in the menu bar; clicking it shows Manila plus Denver, London, Cairns with the widget's colours; clicking again or elsewhere closes it.
 - ~~**Follows the widget.** Edit a widget's cities, reopen the panel: the new list shows.~~ SUPERSEDED 2026-10-27: cities are set in Settings now.
 - ~~**Two widgets.** Give the large one an extra city: the panel shows it, and shared cities appear once.~~ SUPERSEDED 2026-10-27: cities are set in Settings now.
-- ⏳ **Long list.** 10+ cities: the panel scrolls after 8 rows (the preview renderer can't draw this).
-- ⏳ **Gear menu.** Open at Login tick matches System Settings; How to Use opens the window; Quit removes the globe.
+- ✅ **Long list.** 10+ cities: the panel scrolls; the medium widget ends in "+5 more". (Jason, 2026-10-28)
+- ⏳ **Gear menu.** Open at Login tick matches System Settings; How to Use opens the window; Quit removes the icon. (Quit ✅ (Jason, 2026-10-28))
 - ⏳ **Ticks.** Leave the panel open across a minute change: times advance.
 - ⏳ **No Dock icon**, and the app comes back after a reboot.
 
 ## Settings in the menu bar (added 2026-10-27)
 
 - ✅ **Widget reads the app's settings.** After `defaults write`, the real widget process logged `timeline: 3 cities` for both placed widgets; they survived the switch to a display-only widget.
-- ⏳ **Start clean.** Your saved cities were cleared at install. Click 🌐 › Settings… and add Denver, London, Cairns by searching. The panel and both widgets show them within a few seconds.
+- ⏳ **Start clean.** Your saved cities were cleared at install. Click the menu bar clock › Settings… and add Denver, London, Cairns by searching. The panel and both widgets show them within a few seconds.
 - ⏳ **Search by hand.** "Colorado" → Denver, Mountain Time (MDT) first; "Japan" → Tokyo; "PST" → Los Angeles; "syd" → Sydney 🇦🇺 then Sydney 🇨🇦; "Arizona" → Phoenix. Each suggestion shows its local time; an added place shows "added".
 - ⏳ **Add slot.** + Add city focuses the search; Return picks the first suggestion; Escape or Cancel closes the slot.
-- ⏳ **Reorder and remove.** Drag a city (or right-click › Move Up/Down); the minus button removes it. Widget and panel follow.
+- ⏳ **Reorder and remove.** Drag a city onto another row (it highlights; dragging down lands after it, up lands before it), or right-click › Move Up/Down; the minus button removes it. Widget and panel follow. ❌ 2026-10-28: drag did nothing (`.onMove` only works in a List, Settings is a Form); now drag and drop per row, recheck.
 - ⏳ **Themes on the desktop.** Pick each of Day & Night, List, Clocks, Spotlight: widget and panel switch within a few seconds. List and Spotlight in light and dark mode.
 - ✅ **Time format.** 24-hour shows `14:10`, no AM/PM, in widget, panel and Settings; Follow Mac goes back to the Mac's setting. (Jason, 2026-10-28: 24-hour works)
 - ⏳ **Mac time zone change.** Change the Mac's time zone: the first row, Settings' own row, the panel and the widget all follow within seconds.
-- ⏳ **Empty state.** Remove every city: widget says "Add cities from the menu bar 🌐"; panel says "Add cities in Settings" and clicking it opens Settings.
+- ⏳ **Empty state.** Remove every city: widget says "Add cities from the clock in the menu bar"; panel says "Add cities in Settings" and clicking it opens Settings.
 - ⏳ **Open at Login** checkbox in Settings matches the gear menu and System Settings.
 - ⏳ **Long names.** Colorado Springs lost its flag in Spotlight and squeezed the sun icon in Day & Night (Jason, 2026-10-28). Rule now, every theme: flag, sky icon, time and difference keep their size and place; a long name is cut ("Colorado Spr…"); the difference shortens first ("−14 hrs" → "−14"). Previews `long-*`, `narrow-*`. Check on the desktop with Colorado Springs and Honolulu.

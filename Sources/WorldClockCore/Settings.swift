@@ -112,6 +112,13 @@ public final class SettingsStore: ObservableObject {
         }
     }
 
+    /// Drag and drop in Settings: the dragged city takes the place of the row it was dropped on,
+    /// so dragging down lands after that row and dragging up lands before it.
+    public func moveCity(at source: Int, onto target: Int) {
+        guard source != target, settings.cities.indices.contains(source), settings.cities.indices.contains(target) else { return }
+        move(from: [source], to: target > source ? target + 1 : target)
+    }
+
     public func setTheme(_ theme: Theme) {
         change { $0.theme = theme }
     }
