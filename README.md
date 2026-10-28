@@ -79,7 +79,7 @@ I designed Otherhours and tested it on my own Mac; the code was written with [Cl
 
 ## Support
 
-Otherhours is free. If it's useful to you, you can [buy me a coffee](https://ko-fi.com/KOFI_HANDLE). Bug reports and ideas are welcome in [Issues](../../issues).
+Otherhours is free. If it's useful to you, you can [buy me a coffee](https://ko-fi.com/jayzor7489). Bug reports and ideas are welcome in [Issues](../../issues).
 
 ## Credits
 
