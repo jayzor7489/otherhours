@@ -109,7 +109,7 @@ public struct MenuPanelView: View {
                 Toggle("Open at Login", isOn: $openAtLogin)
                 Button("How to Use", action: onHowTo)
                 Divider()
-                Button("Quit World Clock", action: onQuit)
+                Button("Quit Otherhours", action: onQuit)
             } label: {
                 Image(systemName: "gearshape")
             }

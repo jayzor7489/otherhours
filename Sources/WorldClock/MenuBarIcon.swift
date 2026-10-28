@@ -44,6 +44,6 @@ func menuBarIcon() -> NSImage {
         return true
     }
     image.isTemplate = true
-    image.accessibilityDescription = "World Clock"
+    image.accessibilityDescription = "Otherhours"
     return image
 }

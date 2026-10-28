@@ -8,7 +8,7 @@
     <true/>
     <key>com.apple.security.temporary-exception.shared-preference.read-only</key>
     <array>
-        <string>com.jasonaldemita.worldclock</string>
+        <string>com.jasonaldemita.otherhours</string>
     </array>
 </dict>
 </plist>

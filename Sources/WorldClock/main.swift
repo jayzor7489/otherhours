@@ -12,10 +12,10 @@ import WorldClockViews
 /// update or reinstall recovers just by opening the app. Failures are ignored.
 func repairWidget() {
     let app = Bundle.main.bundleURL
-    let appex = app.appendingPathComponent("Contents/PlugIns/WorldClockWidget.appex")
+    let appex = app.appendingPathComponent("Contents/PlugIns/OtherhoursWidget.appex")
     let lsregister = "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
     for (tool, args) in [(lsregister, ["-f", app.path]), ("/usr/bin/pluginkit", ["-a", appex.path]),
-                         ("/usr/bin/killall", ["WorldClockWidget"])] {
+                         ("/usr/bin/killall", ["OtherhoursWidget"])] {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: tool)
         process.arguments = args
@@ -29,7 +29,7 @@ func repairWidget() {
 
 /// The data files are shipped once, inside the widget extension; the app reads those copies.
 func bundledData(_ name: String) -> URL {
-    Bundle.main.bundleURL.appendingPathComponent("Contents/PlugIns/WorldClockWidget.appex/Contents/Resources/\(name)")
+    Bundle.main.bundleURL.appendingPathComponent("Contents/PlugIns/OtherhoursWidget.appex/Contents/Resources/\(name)")
 }
 
 let directory: CityDirectory = (try? CityDirectory.load(contentsOf: bundledData("cities.tsv"))) ?? CityDirectory(records: [])
@@ -55,8 +55,8 @@ enum LoginItem {
 struct HowToView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("World Clock").font(.title2.bold())
-            step(1, "Right-click the desktop, choose **Edit Widgets**, search for **World Clock** and add the medium or large size.")
+            Text("Otherhours").font(.title2.bold())
+            step(1, "Right-click the desktop, choose **Edit Widgets**, search for **Otherhours** and add the medium or large size.")
             step(2, "Click the globe clock in the menu bar, then **Settings…**. Add cities by searching for a city, state, country or time zone: \"Colorado\" finds Mountain Time.")
             step(3, "Pick a theme in Settings. The widget and the menu bar panel both follow it.")
             step(4, "If the widget ever turns grey, open this app again. It has just repaired the widget.")
@@ -97,6 +97,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // The app was called World Clock until 2026-10-28; bring its settings across once.
+        if let old = UserDefaults(suiteName: "com.jasonaldemita.worldclock") { ClockSettings.migrate(from: old, to: .standard) }
         DispatchQueue.global(qos: .utility).async(execute: repairWidget)
         LoginItem.setUpOnce()
 
@@ -154,7 +156,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         popover.performClose(nil)
         if window == nil {
             let window = NSWindow(contentViewController: NSHostingController(rootView: HowToView()))
-            window.title = "World Clock"
+            window.title = "Otherhours"
             window.styleMask = [.titled, .closable]
             window.isReleasedWhenClosed = false
             window.center()

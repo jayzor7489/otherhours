@@ -88,3 +88,21 @@ private let tokyo = SavedCity(name: "Tokyo", countryCode: "JP", timeZoneID: "Asi
     store.moveCity(at: 1, onto: 1)   // onto itself: nothing changes
     #expect(ClockSettings.load(from: d).cities == [sydney, london, tokyo, denver])
 }
+
+@Test func renameCopiesOldSettingsOnce() {
+    let old = freshDefaults(), new = freshDefaults()
+    let saved = ClockSettings(cities: [denver, tokyo], theme: .spotlight, hourCycle: .h24)
+    saved.save(to: old)
+    #expect(ClockSettings.migrate(from: old, to: new))
+    #expect(ClockSettings.load(from: new) == saved)
+    // Once the new home has settings of its own, the old ones never overwrite them.
+    ClockSettings(cities: [london], theme: .list, hourCycle: .system).save(to: new)
+    #expect(!ClockSettings.migrate(from: old, to: new))
+    #expect(ClockSettings.load(from: new).cities == [london])
+}
+
+@Test func renameWithNothingSavedCopiesNothing() {
+    let new = freshDefaults()
+    #expect(!ClockSettings.migrate(from: freshDefaults(), to: new))
+    #expect(new.object(forKey: "cities") == nil)
+}

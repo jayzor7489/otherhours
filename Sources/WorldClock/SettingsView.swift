@@ -17,7 +17,7 @@ final class SettingsWindowController {
     func show() {
         if window == nil {
             let window = NSWindow(contentViewController: NSHostingController(rootView: makeView()))
-            window.title = "World Clock Settings"
+            window.title = "Otherhours Settings"
             window.styleMask = [.titled, .closable, .resizable]
             window.setContentSize(NSSize(width: 460, height: 560))
             window.isReleasedWhenClosed = false
@@ -107,7 +107,7 @@ struct SettingsView: View {
     }
 
     /// A dragged row carries its index, prefixed so text dropped from elsewhere is ignored.
-    private static let dragPrefix = "worldclock-city:"
+    private static let dragPrefix = "otherhours-city:"
 
     private static func draggedIndex(_ payload: String) -> Int? {
         payload.hasPrefix(dragPrefix) ? Int(payload.dropFirst(dragPrefix.count)) : nil

@@ -8,7 +8,7 @@ import WidgetKit
 import WorldClockCore
 import WorldClockViews
 
-private let log = Logger(subsystem: "com.jasonaldemita.worldclock", category: "widget")
+private let log = Logger(subsystem: "com.jasonaldemita.otherhours", category: "widget")
 
 struct ClockEntry: TimelineEntry {
     let date: Date
@@ -46,7 +46,7 @@ struct ClockProvider: TimelineProvider {
 
     /// Read fresh every time: the app saves, then asks WidgetKit to reload.
     static func currentSettings() -> ClockSettings {
-        UserDefaults(suiteName: "com.jasonaldemita.worldclock").map(ClockSettings.load(from:))
+        UserDefaults(suiteName: "com.jasonaldemita.otherhours").map(ClockSettings.load(from:))
             ?? ClockSettings(cities: [], theme: .dayNight, hourCycle: .system)
     }
 
@@ -75,12 +75,12 @@ struct WorldClockEntryView: View {
     }
 }
 
-struct WorldClockWidget: Widget {
+struct OtherhoursWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "WorldClock", provider: ClockProvider()) { entry in
+        StaticConfiguration(kind: "Otherhours", provider: ClockProvider()) { entry in
             WorldClockEntryView(entry: entry)
         }
-        .configurationDisplayName("World Clock")
+        .configurationDisplayName("Otherhours")
         .description("Any number of cities, coloured by day and night.")
         .supportedFamilies([.systemMedium, .systemLarge])
         .contentMarginsDisabled()
@@ -90,6 +90,6 @@ struct WorldClockWidget: Widget {
 @main
 struct WorldClockBundle: WidgetBundle {
     var body: some Widget {
-        WorldClockWidget()
+        OtherhoursWidget()
     }
 }

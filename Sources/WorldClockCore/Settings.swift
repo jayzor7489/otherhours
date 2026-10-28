@@ -39,7 +39,7 @@ public enum HourCycle: String, CaseIterable {
     }
 }
 
-/// Everything the user can set. Lives in the app's preferences (com.jasonaldemita.worldclock);
+/// Everything the user can set. Lives in the app's preferences (com.jasonaldemita.otherhours);
 /// the widget reads the same domain through its shared-preference entitlement.
 public struct ClockSettings: Equatable {
     public var cities: [SavedCity]
@@ -62,6 +62,15 @@ public struct ClockSettings: Equatable {
         return ClockSettings(cities: cities,
                              theme: defaults.string(forKey: "theme").flatMap(Theme.init(rawValue:)) ?? .dayNight,
                              hourCycle: defaults.string(forKey: "hourCycle").flatMap(HourCycle.init(rawValue:)) ?? .system)
+    }
+
+    /// Copies the settings from `old` when `new` has never been saved to; returns whether it did.
+    /// Used once after the rename from World Clock (com.jasonaldemita.worldclock) to Otherhours.
+    @discardableResult
+    public static func migrate(from old: UserDefaults, to new: UserDefaults) -> Bool {
+        guard new.object(forKey: "cities") == nil, old.object(forKey: "cities") != nil else { return false }
+        load(from: old).save(to: new)
+        return true
     }
 
     public func save(to defaults: UserDefaults) {

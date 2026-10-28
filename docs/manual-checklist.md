@@ -1,4 +1,4 @@
-# World Clock: manual checklist
+# Otherhours (formerly World Clock): manual checklist
 
 Things only the real desktop can show. Install first with `scripts/build.sh`. Debug with
 `/usr/bin/log show --last 5m --style compact --info --predicate 'process == "WorldClockWidget"'` (zsh's own `log` is a different command).
@@ -39,7 +39,7 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 ## Recovery
 
 - ✅ **After a reboot.** The widget comes back on its own, not grey. (Jason, 2026-10-28)
-- ⏳ **Repair.** If it is ever grey, opening World Clock fixes it within a few seconds.
+- ⏳ **Repair.** If it is ever grey, opening Otherhours fixes it within a few seconds.
 
 ## Menu bar (added 2026-10-27)
 
@@ -66,3 +66,10 @@ Results: ✅ passed, ❌ failed, ⏳ not run yet.
 - ⏳ **Empty state.** Remove every city: widget says "Add cities from the globe in the menu bar"; panel says "Add cities in Settings" and clicking it opens Settings.
 - ✅ **Open at Login** checkbox in Settings matches the gear menu and System Settings. (Jason, 2026-10-28)
 - ⏳ **Long names.** Colorado Springs lost its flag in Spotlight and squeezed the sun icon in Day & Night (Jason, 2026-10-28). Rule now, every theme: flag, sky icon, time and difference keep their size and place; a long name is cut ("Colorado Spr…"); the difference shortens first ("−14 hrs" → "−14"). Previews `long-*`, `narrow-*`. Check on the desktop with Colorado Springs and Honolulu.
+
+## Rename to Otherhours (added 2026-10-28)
+
+- ⏳ **Old one gone.** No "World Clock" from this app in the widget gallery (Apple's own World Clock widget stays); old placed widgets go blank and can be removed.
+- ⏳ **New one listed.** Edit Widgets > search "Otherhours" shows medium and large; add them back.
+- ⏳ **Settings came across.** Settings shows the same cities, theme and time format as before the rename.
+- ⏳ **Login item.** System Settings > General > Login Items shows Otherhours. Remove a leftover "World Clock" entry there if one remains.

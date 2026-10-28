@@ -19,6 +19,8 @@ Success: a person who has never seen the app clicks the globe, adds "Colorado" a
 | How many cities | Slots: a **+** button adds another one. Any number. |
 | Theme | A setting, offering the four looks from the first mockup (`docs/mockups/visual-style.html`). |
 | Long names (2026-10-28) | Flag, sky icon, time and difference keep their size and position in every theme; a long city name is cut ("Colorado Spr…"). The difference shortens before anything else ("−14 hrs" → "−14"). |
+| Name (2026-10-28) | **Otherhours**, Jason's pick from seven names that no App Store or Mac App Store app, GitHub clock project or time product was found using (raters averaged it 7.0/10; Skyhours 6.7 and Faraway Hours 6.3 were the runners-up). App, widget, bundle IDs (`com.jasonaldemita.otherhours`) and preferences carry the new name; Swift targets and the repo folder keep WorldClock (Claude's call: renaming them is churn with no user-visible effect). First launch copies settings from the old preferences. Not checked: trademark registers. |
+| Menu bar icon (2026-10-28) | A globe with clock hands at 4:00, drawn as a template image. A one-colour day/night clock was tried first; Jason preferred a globe. |
 | Earlier answers still standing | Globe icon only in the menu bar; panel shows the same rows; starts at login; no Dock icon; medium and large widgets; compact then "+N more" in the widget when the list is long. |
 
 ## What the person sees

@@ -1,6 +1,6 @@
-# World Clock
+# Otherhours
 
-A macOS desktop widget and menu bar app that shows your own time plus as many cities as you want. Apple's World Clock widget stops at four cities and shows clock faces only; this one takes any number, puts each city's flag next to it, and colours each row by that city's sky right now (night, dawn, day, dusk), so you can see at a glance who is asleep.
+The hours over there. A macOS desktop widget and menu bar app that shows your own time plus as many cities as you want. Apple's World Clock widget stops at four cities and shows clock faces only; this one takes any number, puts each city's flag next to it, and colours each row by that city's sky right now (night, dawn, day, dusk), so you can see at a glance who is asleep.
 
 Built for my own Mac, with the Xcode Command Line Tools only (no Xcode).
 
@@ -40,19 +40,20 @@ Design and evidence: `docs/specs/2026-10-27-world-clock-design.md` (the widget) 
 scripts/build.sh
 ```
 
-Builds `World Clock.app` with its widget extension, checks the entry point and entitlements, signs ad-hoc, installs to `~/Applications` (change `INSTALL_DIR` for another Mac), registers the widget and opens the app. Then right-click the desktop > **Edit Widgets**, search **World Clock**, and add the medium or large size.
+Builds `Otherhours.app` with its widget extension, checks the entry point and entitlements, signs ad-hoc, installs to `~/Applications` (change `INSTALL_DIR` for another Mac), registers the widget and opens the app. Then right-click the desktop > **Edit Widgets**, search **Otherhours**, and add the medium or large size.
 
 The app starts at login (turned on at first launch; switch it off in the gear menu or System Settings > General > Login Items). It has no Dock icon.
 
-**If the widget turns grey,** open **World Clock** from Applications again. Each launch or reopen re-registers the widget, restarts it and reloads it.
+**If the widget turns grey,** open **Otherhours** from Applications again. Each launch or reopen re-registers the widget, restarts it and reloads it.
 
 ## Develop
 
 - Tests: `scripts/test.sh` (Swift Testing, WorldClockCore).
 - Previews: `swift run -c release WorldClockPreview Resources/cities.tsv docs/previews`.
 - Data: `python3 -I scripts/make_cities.py` regenerates `Resources/cities.tsv` and `Resources/regions.tsv` from GeoNames. `Resources/abbreviations.tsv` is hand-made.
-- Logs: `/usr/bin/log show --last 5m --info --predicate 'subsystem == "com.jasonaldemita.worldclock"'` (each widget timeline logs its city count). Use the full path: zsh has its own `log` command.
+- Logs: `/usr/bin/log show --last 5m --info --predicate 'subsystem == "com.jasonaldemita.otherhours"'` (each widget timeline logs its city count). Use the full path: zsh has its own `log` command.
 - Manual checks: `docs/manual-checklist.md`.
+- Naming: the app was called World Clock until 2026-10-28. The Swift targets and the repo folder keep that name; the app, widget, bundle IDs and preferences are Otherhours, and the first launch copies settings from the old `com.jasonaldemita.worldclock` preferences.
 
 ## Credits
 

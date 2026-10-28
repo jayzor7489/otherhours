@@ -2,11 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleExecutable</key><string>WorldClockWidget</string>
-    <key>CFBundleIdentifier</key><string>com.jasonaldemita.worldclock.widget</string>
+    <key>CFBundleExecutable</key><string>OtherhoursWidget</string>
+    <key>CFBundleIdentifier</key><string>com.jasonaldemita.otherhours.widget</string>
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
-    <key>CFBundleName</key><string>WorldClockWidget</string>
-    <key>CFBundleDisplayName</key><string>World Clock</string>
+    <key>CFBundleName</key><string>OtherhoursWidget</string>
+    <key>CFBundleDisplayName</key><string>Otherhours</string>
     <key>CFBundlePackageType</key><string>XPC!</string>
     <key>CFBundleShortVersionString</key><string>1.0.0</string>
     <key>CFBundleVersion</key><string>0</string>
