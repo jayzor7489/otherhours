@@ -1,8 +1,8 @@
 # Otherhours
 
-**The hours over there.** A free, open-source macOS desktop widget and menu bar app that shows your own time plus as many cities as you want. Each city gets its flag and a row coloured by its sky right now (night, dawn, day, dusk), so you can see at a glance who is asleep.
+**The hours over there.** A free, open-source macOS desktop widget and menu bar world clock for anyone who works across time zones. Each city shows its flag, its time, how far ahead or behind it is, and a row coloured by its sky right now, so you can see who is awake before you message or book a call.
 
-Apple's World Clock widget stops at four cities and shows clock faces only. I wanted any number of cities, at a glance, on one widget.
+I'm a freelancer with clients in different cities and time zones. I used Apple's built-in World Clock widget, but it only fits four cities as clock faces, so I still had to work out who was awake. Otherhours is what I wanted instead.
 
 <p align="center">
   <img src="docs/screenshots/menu-bar-panel.png" alt="The menu bar panel: Manila, Denver, Sydney, Madrid, Chicago and Costa Rica, each row coloured by its sky" width="340">
@@ -14,7 +14,7 @@ Apple's World Clock widget stops at four cities and shows clock faces only. I wa
 
 ## What it does
 
-- **Any number of cities**, set in one place: click the globe clock in the menu bar, then **Settings…**.
+- **Add as many cities as you want**, in one place: click the globe clock in the menu bar, then **Settings…**. The menu bar panel shows them all; the widget fits what its size allows (4 to 5 rows on medium, 9 to 10 on large, depending on the theme) and ends with "+N more".
 - **Search that knows what you mean.** Type a city ("syd" offers Sydney, Australia and Sydney, Canada), a state ("Colorado" gives Denver, Mountain Time), a country ("Japan" gives Tokyo; "United States" gives its 7 clocks), an abbreviation ("PST", "AEST", "IST") or a zone name ("Mountain Time"). Each suggestion shows its local time, so you can tell you picked the right clock. Arizona correctly gives Phoenix, which skips daylight saving.
 - **Your own time comes first**, from the Mac's clock. Install it in New York and it shows New York; travel, and it follows the Mac within seconds.
 - **Four themes**, for the widget and the panel alike:
